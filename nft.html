@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCPM — NFT Passport</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/qrtools.js"></script>
+<script src="js/auth.js"></script>
+<style>
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+           background:#141414; font-family:"Courier New",monospace; color:#ffb000; }
+    .card { width:320px; background:#1b1b1b; border:2px solid #333; border-radius:14px;
+            padding:24px; text-align:center; box-shadow:0 0 40px rgba(255,176,0,.12); position:relative; }
+    
+    .status-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); 
+                    font-size:10px; letter-spacing:1px; font-weight:bold; padding:3px 10px; border-radius:20px; }
+    .status-badge.original { background:#1b1b1b; border:1px solid #5cff76; color:#5cff76; box-shadow:0 0 10px rgba(92,255,118,0.3); }
+    .status-badge.copy { background:#1b1b1b; border:1px solid #ff5c5c; color:#ff5c5c; box-shadow:0 0 10px rgba(255,92,92,0.3); }
+
+    .coin { width:140px; height:140px; object-fit:contain; filter:drop-shadow(0 4px 12px #000); margin-top: 10px; }
+    h1 { font-size:20px; letter-spacing:2px; margin:10px 0 2px; }
+    .serial { font-size:16px; color:#fff; margin:2px 0; }
+    .proto { font-size:11px; color:#888; letter-spacing:1px; margin:2px 0; }
+    .tx { font-size:10px; color:#666; word-break:break-all; margin:8px 0; }
+    .qr { width:150px; height:150px; background:#fff; border-radius:8px; padding:6px; box-sizing:border-box; image-rendering:pixelated; }
+    .hint { font-size:10px; color:#666; letter-spacing:1px; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="card" id="passportCard">
+    <div id="statusBadge" class="status-badge" style="display:none;"></div>
+    <br>
+    <img id="coinImg" class="coin" alt="">
+    <h1 id="title"></h1>
+    <p id="serial" class="serial"></p>
+    <p id="proto" class="proto"></p>
+    <p id="tx" class="tx"></p>
+    <img id="qr" class="qr" alt="QR">
+    <p class="hint">QR НА ОБОРОТЕ МОНЕТЫ ВЕДЁТ НА ЭТУ СТРАНИЦУ</p>
+</div>
+<script>
+(async function () {
+    var p = new URLSearchParams(location.search);
+    var coin = (p.get("coin") || "BTC").toUpperCase();
+    var serialRaw = p.get("serial") || "#00000001";
+    var tx = p.get("tx") || "";
+    
+    // Убираем решетку для поиска в базе (если она есть)
+    var serialNum = parseInt(serialRaw.replace('#', ''), 10);
+
+    var meta = {
+        BTC: { t: "GOLD BTC",  pr: "ORDINALS", ch: "Bitcoin"  },
+        ETH: { t: "SILVER ETH", pr: "ERC-721", ch: "Ethereum" }
+    }[coin] || { t: coin, pr: "—", ch: "—" };
+
+    document.title = "SCPM — " + meta.t + " " + serialRaw;
+    document.getElementById("coinImg").src = "assets/sprites/" + coin.toLowerCase() + ".png";
+    document.getElementById("title").textContent = meta.t;
+    document.getElementById("serial").textContent = serialRaw;
+    document.getElementById("proto").textContent = meta.pr + " • " + meta.ch;
+    document.getElementById("tx").textContent = tx ? "TX: " + tx : "";
+    
+    var d = window.qrTools ? qrTools.dataUrl(location.href, 150) : null;
+    if (d) document.getElementById("qr").src = d;
+
+    // ПРОВЕРКА В БАЗЕ ДАННЫХ
+    if (window.scpmSupabase && !isNaN(serialNum)) {
+        try {
+            const { data, error } = await window.scpmSupabase
+                .from('nfts')
+                .select('id')
+                .eq('coin', coin)
+                .eq('serial', serialNum)
+                .maybeSingle();
+
+            const badge = document.getElementById("statusBadge");
+            badge.style.display = "inline-block";
+
+            if (data && !error) {
+                badge.className = "status-badge original";
+                badge.textContent = "✅ ОРИГИНАЛ";
+            } else {
+                badge.className = "status-badge copy";
+                badge.textContent = "⚠️ КОПИЯ / НЕ НАЙДЕНО";
+            }
+        } catch (e) {
+            console.warn("Verification error:", e);
+        }
+    }
+})();
+</script>
+</body>
+</html>

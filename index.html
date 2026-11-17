@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCPM Studio v0.5.0 - Build 0028</title>
+    <link rel="stylesheet" href="css/editor.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           РЕЖИМ ПУБЛИЧНОГО САЙТА
+           ========================================================= */
+        #topbar { display: none !important; }
+        #properties { display: none !important; }
+        #statusbar { display: none !important; }
+
+        body:not(.admin-mode) #workspace {
+            width: 100vw !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: #202020 !important;
+        }
+        body:not(.admin-mode) #scene {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        body:not(.admin-mode) #sceneContainer {
+            position: relative !important;
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+        }
+
+        body:not(.admin-mode) #cassette {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+            display: block !important;
+        }
+
+        /* =========================================================
+           КНОПКА РЕЖИМА РЕДАКТИРОВАНИЯ
+           ========================================================= */
+        #toggleEditBtn {
+            position: absolute;
+            top: 1.5%;
+            right: 2%;
+            z-index: 50;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff41;
+            border-radius: 4px;
+            color: #00ff41;
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+        #toggleEditBtn:hover {
+            background: rgba(0, 20, 0, 0.9);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+        }
+        body.edit-mode #toggleEditBtn {
+            background: rgba(180, 20, 20, 0.9);
+            border-color: #ff5c5c;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 92, 92, 0.6);
+        }
+        body.edit-mode #toggleEditBtn:hover {
+            background: rgba(220, 30, 30, 1);
+        }
+
+        body:not(.admin-mode):not(.edit-mode) #topbar,
+        body:not(.admin-mode):not(.edit-mode) #properties,
+        body:not(.admin-mode):not(.edit-mode) #statusbar {
+            display: none !important;
+        }
+
+        /* =========================================================
+           SCPM — INTERACTIVE MOTTO
+           ========================================================= */
+        #cassetteMotto {
+            position: absolute;
+            left: 6.2%;
+            top: 56.4%;
+            width: 87.6%;
+            height: 6.2%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0 2%;
+            box-sizing: border-box;
+            color: rgba(210, 181, 125, 0.78);
+            font-family: "Roboto Condensed", "Arial Narrow", "Segoe UI", Arial, sans-serif;
+            font-size: clamp(13px, 1.48vw, 24px);
+            font-weight: 700;
+            letter-spacing: .7px;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 30;
+            opacity: 0.9;
+            transition: color .22s ease, text-shadow .22s ease, opacity .22s ease, transform .22s ease;
+        }
+
+        #cassetteMotto.is-lit {
+            color: #00ff41;
+            opacity: 1;
+            text-shadow:
+                0 0 2px rgba(0, 255, 65, .95),
+                0 0 5px rgba(0, 255, 65, .72),
+                0 0 10px rgba(0, 255, 65, .42),
+                0 0 16px rgba(0, 255, 65, .18);
+            transform: translateY(-1px);
+        }
+
+        /* =========================================================
+           SCPM — INTERACTIVE "NEW"
+           ========================================================= */
+        #cassetteNew {
+            position: absolute;
+            left: 57.9%;
+            top: 11.5%;
+            width: 8.55%;
+            height: 3.9%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0; padding: 0; box-sizing: border-box;
+            color: #d82d63;
+            font-family: "Roboto Condensed", "Arial Narrow", "Segoe UI", Arial, sans-serif;
+            font-size: clamp(22.5px, 1.40vw, 30px);
+            font-weight: 800;
+            letter-spacing: .15px;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            pointer-events: none; user-select: none; z-index: 31;
+            opacity: .96;
+            transition: color .20s ease, text-shadow .20s ease, opacity .20s ease;
+        }
+
+        #cassetteNew.is-lit {
+            color: #ff4b8b;
+            opacity: 1;
+            text-shadow:
+                0 0 1px rgba(255, 75, 139, .95),
+                0 0 3px rgba(255, 75, 139, .68),
+                0 0 6px rgba(255, 75, 139, .30);
+        }
+
+                   /* =========================================================
+           GOLD BTC / SILVER ETH (Замена текста на картинке)
+           ========================================================= */
+        #goldBtcLabel,
+        #silverEthLabel {
+            position: absolute;
+            top: 16%; /* Позиция по вертикали */
+            font-family: "Roboto Condensed", "Arial Narrow", "Segoe UI", Arial, sans-serif;
+            font-size: clamp(24px, 3vw, 48px); /* Увеличенный размер */
+            font-weight: 800; /* Жирный шрифт */
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 20;
+            
+            /* Начальный цвет (темный, как на картинке) */
+            color: #4a4035; 
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        #goldBtcLabel {
+            left: 22.5%; 
+        }
+
+        #silverEthLabel {
+            right: 20%;
+            text-align: right;
+        }
+
+                /* Подсветка для GOLD BTC (Максимально золотой) */
+        #goldBtcLabel.lit {
+            color: #ffd700; /* Яркое золото */
+            text-shadow: 
+                0 0 4px rgba(255, 215, 0, 1),
+                0 0 10px rgba(255, 200, 0, 0.8),
+                0 0 20px rgba(255, 180, 0, 0.6),
+                0 0 40px rgba(255, 160, 0, 0.3);
+        }
+
+                /* Подсветка для SILVER ETH (Четкий ярко-синий, по структуре как у BTC) */
+        #silverEthLabel.lit {
+            color: #00aaff; /* Яркий, чистый синий */
+            text-shadow: 
+                0 0 2px rgba(0, 170, 255, 1),
+                0 0 6px rgba(0, 170, 255, 0.9),
+                0 0 12px rgba(0, 120, 255, 0.8),
+                0 0 20px rgba(0, 80, 255, 0.4);
+        }
+
+                /* =========================================================
+           НИКНЕЙМ НАД ВХОДОМ (подпись + значение)
+           ========================================================= */
+        #lcdUserNICKNAME {
+            position: absolute;
+            top: 3%;
+            left: 50%; /* Центрируем весь блок по горизонтали */
+            transform: translate(-50%, -50%);
+            display: none;
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            
+            /* Раздвигаем по краям */
+            width: 85%; /* Ширина блока, подкрути под размер дисплея */
+            justify-content: space-between; 
+            align-items: baseline;
+        }
+
+        /* Подпись (слева) */
+        #lcdUserNICKNAME .nick-label {
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #00ff41;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+            letter-spacing: 1px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            flex-shrink: 0; /* Запрещаем подписи сжиматься */
+        }
+
+        /* Сам никнейм (справа) */
+        #lcdUserNICKNAME .nick-value {
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #ffb000;
+            text-shadow: 0 0 6px rgba(255, 176, 0, 0.8);
+            letter-spacing: 1px;
+            
+            /* Выравнивание по правому краю и направление текста справа налево */
+            text-align: right;
+            direction: rtl; 
+            
+            /* Занимает всё оставшееся пространство */
+            flex-grow: 1; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* =========================================================
+           ССЫЛКА ВХОД / АККАУНТ
+           ========================================================= */
+        #lcdAccountBtn {
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #00ff41;
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+            pointer-events: auto;
+            white-space: nowrap;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        #lcdAccountBtn:hover {
+            color: #ffffff;
+            text-shadow: 
+                0 0 5px #ffffff,
+                0 0 15px #00ff41,
+                0 0 25px #00ff41;
+        }
+
+        #cassetteDisplay .display-hint,
+        #cassetteDisplay .display-price {
+            position: absolute;
+            bottom: 30px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+        }
+
+        /* =========================================================
+           ДИНАМИЧЕСКИЙ СЧЕТЧИК NFT
+           ========================================================= */
+        #lcdStats {
+            position: absolute;
+            top: -110.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+            color: #ffb000;
+            z-index: 5;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #lcdStats .stat-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+            text-shadow: 
+                0 0 5px rgba(255, 176, 0, 0.8),
+                0 0 15px rgba(255, 176, 0, 0.4);
+        }
+
+        #lcdStats .stat-row-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 50px; 
+        }
+
+        #lcdStats .stat-row {
+            font-size: 12px; 
+            font-weight: 700;
+            color: #aaa;
+            letter-spacing: 0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        #lcdStats .stat-row span {
+            color: #00ff41;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+        }
+
+        /* =========================================================
+           АУДИО-ПЛЕЕР НА КАССЕТЕ (БЕЗ ФОНА, С SVG)
+           ========================================================= */
+        #cassetteAudioPlayer {
+            position: absolute;
+            top: 36.5%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 20;
+            background: transparent;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        #cassetteAudioPlayer button {
+            background: none;
+            border: none;
+            color: #2a2a2a;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0px 1px 0px rgba(255, 255, 255, 0.4)); 
+        }
+
+        #cassetteAudioPlayer button:hover {
+            color: #000000;
+            transform: scale(1.15);
+            filter: drop-shadow(0px 0px 5px rgba(50, 50, 50, 0.5)); 
+        }
+
+        #btnMusicPlay {
+            color: #f7931a !important; 
+            filter: drop-shadow(0px 1px 0px rgba(255, 255, 255, 0.7)) !important;
+        }
+
+        #btnMusicPlay:hover {
+            color: #ffb000 !important;
+            filter: drop-shadow(0px 0px 6px rgba(247, 147, 26, 0.8)) !important;
+        }
+
+        #btnMusicPlay.active {
+            color: #00ff41 !important;
+            filter: drop-shadow(0 0 6px rgba(0, 255, 65, 0.8)) !important;
+        }
+
+        #cassetteAudioPlayer svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        @media (max-width: 900px) {
+            #cassetteMotto { font-size: clamp(11px, 1.55vw, 20px); letter-spacing: .7px; }
+        }
+
+        @media (max-width: 600px) {
+            #cassetteMotto { font-size: clamp(9px, 1.75vw, 16px); letter-spacing: .45px; }
+        }
+    </style>
+
+<style id="manual-text-controls-side-a">
+
+/* =========================================
+   SIDE A — ЦЕНТРАЛЬНОЕ УПРАВЛЕНИЕ НАДПИСЯМИ
+   Меняй значения только в этом блоке
+   ========================================= */
+
+:root {
+    /* GOLD BTC */
+    --a-btc-left: 26%;
+    --a-btc-top: 16%;
+    --a-btc-font: clamp(24px, 3vw, 37px);
+
+    /* SILVER ETH */
+    --a-eth-right: 26%;
+    --a-eth-top: 16%;
+    --a-eth-font: clamp(24px, 3vw, 37px);
+
+    /* NEW */
+    --a-new-left: 56.5%;
+    --a-new-top: 11.4%;
+    --a-new-width: 8.55%;
+    --a-new-height: 3.9%;
+    --a-new-font: clamp(24px, 1.40vw, 34px);
+
+    /* ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ */
+    --a-motto-left: 6.2%;
+    --a-motto-top: 56.4%;
+    --a-motto-width: 87.6%;
+    --a-motto-height: 6.2%;
+    --a-motto-font: clamp(13px, 1.48vw, 24px);
+
+    /* Буква A */
+    --a-letter-left: 21%;
+    --a-letter-top: 11.7%;
+    --a-letter-font: 30px;
+
+    /* Надпись SIDE */
+    --a-side-left: 20.9%;
+    --a-side-top: 16%;
+    --a-side-font: 10px;
+
+    /* Музыкальный плеер */
+    --a-audio-left: 50%;
+    --a-audio-top: 36%;
+
+    /* Центральный дисплей */
+    --a-display-left: 50%;
+    --a-display-top: 46.4%;
+    --a-display-width: 220px;
+    --a-display-height: 80px;
+
+    /* NICKNAME */
+    --a-nickname-left: 50%;
+    --a-nickname-top: 3%;
+    --a-nickname-width: 85%;
+
+    /* LOGIN / ACCOUNT */
+    --a-login-left: 50%;
+    --a-login-top: -45%;
+
+    /* NFT MINT */
+    --a-stats-left: 50%;
+    --a-stats-top: -108.5%;
+
+    /* Подсказка на дисплее */
+    --a-hint-bottom: 30px;
+
+    /* Котировки BTC */
+    --a-btc-quote-left: 42.6%;
+    --a-btc-quote-top: 54.4%;
+
+    --a-btc-label-left: 45.2%;
+    --a-btc-label-top: 51.1%;
+
+    /* Котировки ETH */
+    --a-eth-quote-right: 42%;
+    --a-eth-quote-top: 54.4%;
+
+    --a-eth-label-right: 45%;
+    --a-eth-label-top: 51.1%;
+
+    /* Разделитель котировок */
+    --a-divider-left: 50%;
+    --a-divider-top: 53.9%;
+}
+
+/* GOLD BTC / SILVER ETH */
+#goldBtcLabel {
+    left: var(--a-btc-left) !important;
+    top: var(--a-btc-top) !important;
+    font-size: var(--a-btc-font) !important;
+}
+
+#silverEthLabel {
+    right: var(--a-eth-right) !important;
+    top: var(--a-eth-top) !important;
+    font-size: var(--a-eth-font) !important;
+}
+
+/* NEW */
+#cassetteNew {
+    left: var(--a-new-left) !important;
+    top: var(--a-new-top) !important;
+    width: var(--a-new-width) !important;
+    height: var(--a-new-height) !important;
+    font-size: var(--a-new-font) !important;
+}
+
+/* Слоган */
+#cassetteMotto {
+    left: var(--a-motto-left) !important;
+    top: var(--a-motto-top) !important;
+    width: var(--a-motto-width) !important;
+    height: var(--a-motto-height) !important;
+    font-size: var(--a-motto-font) !important;
+}
+
+/* Буква A */
+.side-glow-letter.side-a-letter {
+    left: var(--a-letter-left) !important;
+    top: var(--a-letter-top) !important;
+    font-size: var(--a-letter-font) !important;
+}
+
+/* SIDE */
+.side-glow-side.side-a-side {
+    left: var(--a-side-left) !important;
+    top: var(--a-side-top) !important;
+    font-size: var(--a-side-font) !important;
+}
+
+/* Музыкальный плеер */
+#cassetteAudioPlayer {
+    left: var(--a-audio-left) !important;
+    top: var(--a-audio-top) !important;
+}
+
+/* Центральный дисплей */
+#cassetteDisplay {
+    left: var(--a-display-left) !important;
+    top: var(--a-display-top) !important;
+    width: var(--a-display-width) !important;
+    height: var(--a-display-height) !important;
+}
+
+/* NICKNAME */
+#lcdUserNICKNAME {
+    left: var(--a-nickname-left) !important;
+    top: var(--a-nickname-top) !important;
+    width: var(--a-nickname-width) !important;
+}
+
+/* LOGIN / ACCOUNT */
+#lcdAccountBtn {
+    left: var(--a-login-left) !important;
+    top: var(--a-login-top) !important;
+}
+
+/* NFT MINT */
+#lcdStats {
+    left: var(--a-stats-left) !important;
+    top: var(--a-stats-top) !important;
+}
+
+/* Подсказка и цена */
+#cassetteDisplay .display-hint,
+#cassetteDisplay .display-price {
+    bottom: var(--a-hint-bottom) !important;
+}
+
+/* Котировки */
+.quote-label-btc {
+    left: var(--a-btc-label-left) !important;
+    top: var(--a-btc-label-top) !important;
+}
+
+.quote-btc-box {
+    left: var(--a-btc-quote-left) !important;
+    top: var(--a-btc-quote-top) !important;
+}
+
+.quote-label-eth {
+    right: var(--a-eth-label-right) !important;
+    top: var(--a-eth-label-top) !important;
+}
+
+.quote-eth-box {
+    right: var(--a-eth-quote-right) !important;
+    top: var(--a-eth-quote-top) !important;
+}
+
+.quote-divider {
+    left: var(--a-divider-left) !important;
+    top: var(--a-divider-top) !important;
+}
+
+</style>	
+
+<style id="side-a-flip-hit-area-only">
+/* Invisible hit area follows the current A/SIDE label coordinates.
+   Only the existing Side A -> Side B link is affected. */
+#sceneContainer > a.side-letter-flip[href="sideb.html"] {
+    position: absolute !important;
+    left: var(--a-letter-left, 21%) !important;
+    top: var(--a-letter-top, 11.7%) !important;
+    width: 88px !important;
+    height: 92px !important;
+    transform: translate(-50%, -50%) !important;
+    display: block !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+.side-glow-letter.side-a-letter,
+.side-glow-side.side-a-side {
+    pointer-events: none !important;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+    <header id="topbar">
+        <div class="logo-group">
+            <span class="logo">SCPM Studio</span>
+            <span class="version">v0.5.0</span>
+        </div>
+        <div id="toolbar">
+            <button id="btnSave" class="tool-btn" title="Сохранить проект в файл">💾 Save</button>
+            <button id="btnLoad" class="tool-btn" title="Загрузить проект из файла">📂 Load</button>
+            <div class="toolbar-separator"></div>
+            <button id="btnAnimToggle" class="tool-btn" title="Вращение монет">▶️ Play</button>
+            <button id="btnTestMode" class="tool-btn" title="Тест-режим: зоны BUY становятся кнопками покупки">🛒 Shop</button>
+            <a href="sideb.html" class="tool-btn" title="Перейти на Side B">↪ Side B</a>
+            <a href="account.html" id="accountLink" class="tool-btn" title="Личный кабинет">♙ Account</a>
+        </div>
+        <div class="status">● READY</div>
+    </header>
+
+    <main id="workspace">
+        <section id="scene">
+            <div id="sceneContainer">
+                
+                <button id="toggleEditBtn" type="button" title="Режим редактирования">✎ РЕДАКТИРОВАТЬ</button>
+
+                <img id="cassette" src="assets/cassette.png" alt="SCPM Cassette">
+                <div id="objectLayer"></div>
+
+                <!-- GOLD BTC и SILVER ETH -->
+                <span id="goldBtcLabel">GOLD BTC</span>
+                <span id="silverEthLabel">SILVER ETH</span>
+
+                <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
+                <div id="cassetteNew" aria-hidden="true">NEW</div>
+
+                <a href="sideb.html" class="side-letter-flip" title="Перевернуть кассету → Side B" aria-label="Flip to Side B"></a>
+                <span class="side-glow-letter side-a-letter">A</span>
+                <span class="side-glow-side side-a-side">SIDE</span>
+
+                <div id="cassetteAudioPlayer">
+                    <button id="btnMusicMute" title="Выключить звук">
+                        <svg id="iconVolume" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/></svg>
+                        <svg id="iconMute" viewBox="0 0 24 24" style="display:none;"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btnMusicPrev" title="Предыдущий трек">
+                        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btnMusicPlay" title="Пауза / Воспроизведение">
+                        <svg id="iconPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+                        <svg id="iconPause" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor"/></svg>
+                    </button>
+                    <button id="btnMusicNext" title="Следующий трек">
+                        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" fill="currentColor"/></svg>
+                    </button>
+                </div>
+
+                <div id="cassetteDisplay">
+                    <!-- Никнейм над кнопкой входа: подпись + значение -->
+                    <div id="lcdUserNICKNAME">
+                        <span class="nick-label">NICKNAME:</span><span class="nick-value"></span>
+                    </div>
+                    <a href="account.html" id="lcdAccountBtn" title="Личный кабинет">LOGIN / ACCOUNT</a>
+                    
+                    <div id="lcdStats">
+                        <div class="stat-title">NFT MINT</div>
+                        <div class="stat-row-container">
+                            <div class="stat-row">BTC:<span id="statBtc">—</span></div>
+                            <div class="stat-row">ETH:<span id="statEth">—</span></div>
+                        </div>
+                    </div>
+
+                    <div class="display-hint">
+                        <span>НАВЕДИТЕ НА МОНЕТУ</span>
+                        <span>ЧТОБЫ УЗНАТЬ ЕЕ СТОИМОСТЬ</span>
+                    </div>
+                    <div class="display-price hidden">
+                        <div class="display-coin">BTC</div>
+                        <div class="display-amount">$0</div>
+                    </div>
+                </div>
+
+                <div id="cassetteQuotes">
+                    <span class="quote-label-btc">BTC</span>
+                    <span class="quote-label-eth">ETH</span>
+                    <div class="quote-btc-box">
+                        <span id="trendBTC" class="quote-trend neutral">—</span>
+                        <span id="quoteBtc" class="quote-value">$0</span>
+                    </div>
+                    <div class="quote-eth-box">
+                        <span id="quoteEth" class="quote-value">$0</span>
+                        <span id="trendETH" class="quote-trend neutral">—</span>
+                    </div>
+                    <span class="quote-divider">│</span>
+                </div>
+            </div>
+        </section>
+
+        <aside id="properties">
+            <h2>Properties</h2>
+            <div class="property"><span>Selected</span><strong id="selectedObject">None</strong></div>
+            <div class="property"><span>X</span><input id="propX" class="prop-input" type="number" disabled></div>
+            <div class="property"><span>Y</span><input id="propY" class="prop-input" type="number" disabled></div>
+            <div class="property"><span>Scale</span><input id="propScale" class="prop-input" type="number" disabled></div>
+            <div class="property"><span>Rotation</span><input id="propRotation" class="prop-input" type="number" disabled></div>
+            <div class="property"><span>Opacity</span><input id="propOpacity" class="prop-input" type="number" disabled></div>
+        </aside>
+    </main>
+
+    <footer id="statusbar">Ready</footer>
+
+    <input type="file" id="fileLoad" accept=".json,.scpm,application/json" style="display:none">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js?v=2"></script>
+<script src="js/scene.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/input.js"></script>
+<script src="js/history.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/animation.js"></script>
+<script src="js/ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="js/qrtools.js"></script>
+<script src="js/priceTicker.js"></script>
+<script src="js/cassetteDisplay.js"></script>
+<script src="js/projectManager.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/shop.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+/* ============================================================
+   ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ (публичный ↔ редактирование)
+   ============================================================ */
+(function () {
+    var toggleBtn = document.getElementById('toggleEditBtn');
+    if (!toggleBtn) return;
+
+    function setEditMode(on) {
+        document.body.classList.toggle('edit-mode', on);
+        if (window.app && typeof app.setPlayMode === 'function') {
+            app.setPlayMode(!on);
+        }
+        if (on) {
+            toggleBtn.textContent = '✓ ГОТОВО';
+            toggleBtn.title = 'Выйти из режима редактирования';
+        } else {
+            toggleBtn.textContent = '✎ РЕДАКТИРОВАТЬ';
+            toggleBtn.title = 'Режим редактирования (перемещение монет)';
+        }
+        if (window.renderer) renderer.render();
+    }
+
+    toggleBtn.addEventListener('click', function () {
+        var currentMode = document.body.classList.contains('edit-mode');
+        setEditMode(!currentMode);
+        if (currentMode === true && window.storage) {
+            storage.save();
+            console.log('[SCPM] Positions saved to localStorage');
+        }
+    });
+
+    var checkApp = setInterval(function () {
+        if (window.app && typeof app.setPlayMode === 'function') {
+            app.setPlayMode(true);
+            clearInterval(checkApp);
+        }
+    }, 100);
+})();
+
+/* ============================================================
+   НИКНЕЙМ НАД ВХОДОМ (подпись + значение)
+   ============================================================ */
+(function () {
+    var nicknameEl = null;
+    var labelEl = null;
+    var nickValueEl = null;
+
+    function cacheElements() {
+        if (nicknameEl) return;
+        nicknameEl = document.getElementById('lcdUserNICKNAME');
+        if (!nicknameEl) return;
+        labelEl = nicknameEl.querySelector('.nick-label');
+        nickValueEl = nicknameEl.querySelector('.nick-value');
+    }
+
+    async function renderNICKNAME(session) {
+        cacheElements();
+        if (!nicknameEl) return;
+
+        if (!session || !session.user) {
+            nicknameEl.style.display = 'none';
+            return;
+        }
+
+        try {
+            const { data: profile } = await window.scpmSupabase
+                .from('profiles')
+                .select('nickname')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            var nickname = profile && profile.nickname ? profile.nickname.trim() : '';
+            var displayName = '';
+            var labelText = 'NICKNAME:';
+
+            if (nickname) {
+                displayName = nickname.toUpperCase();
+            } else if (session.user.email) {
+                displayName = session.user.email.split('@')[0].toUpperCase();
+                labelText = 'EMAIL:';
+            }
+
+            if (displayName && nickValueEl) {
+                if (labelEl) labelEl.textContent = labelText;
+                nickValueEl.textContent = displayName;
+                nicknameEl.style.display = 'flex';
+            } else {
+                nicknameEl.style.display = 'none';
+            }
+        } catch (e) {
+            console.warn('[SCPM Index] Failed to load nickname:', e);
+        }
+    }
+
+    function boot() {
+        if (!window.scpmSupabase) return;
+        cacheElements();
+        if (!nicknameEl) return;
+
+        window.scpmSupabase.auth.onAuthStateChange(function (event, session) {
+            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                renderNICKNAME(session);
+            }
+            if (event === 'SIGNED_OUT') {
+                nicknameEl.style.display = 'none';
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+/* ============================================================
+   MOTTO HOVER LINK
+   ============================================================ */
+(function () {
+    function initMottoHover() {
+        const container = document.getElementById('sceneContainer');
+        const motto = document.getElementById('cassetteMotto');
+        const newLabel = document.getElementById('cassetteNew');
+        if (!container || !motto || !newLabel) return;
+        let active = false, raf = 0, lastX = 0, lastY = 0;
+        function setLit(value) {
+            if (active === value) return;
+            active = value;
+            motto.classList.toggle('is-lit', value);
+            newLabel.classList.toggle('is-lit', value);
+        }
+        function pointInRect(x, y, rect, pad) {
+            pad = pad || 0;
+            return (x >= rect.left - pad && x <= rect.right + pad && y >= rect.top - pad && y <= rect.bottom + pad);
+        }
+        function overMottoOrNew(x, y) {
+            if (pointInRect(x, y, motto.getBoundingClientRect(), 2)) return true;
+            if (pointInRect(x, y, newLabel.getBoundingClientRect(), 2)) return true;
+            return false;
+        }
+        function overCoin(x, y) {
+            const coins = container.querySelectorAll('.scene-object[data-id="btc"], .scene-object[data-id="eth"]');
+            for (const coin of coins) {
+                const rect = coin.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+                const radius = Math.min(rect.width, rect.height) / 2 * 0.92;
+                const dx = x - cx, dy = y - cy;
+                if (dx * dx + dy * dy <= radius * radius) return true;
+            }
+            return false;
+        }
+        function overBuyZoneElement(x, y) {
+            const zones = container.querySelectorAll('.scene-object[data-id="BUYBTCZONE"], .scene-object[data-id="BUYETHZONE"]');
+            for (const zone of zones) {
+                if (pointInRect(x, y, zone.getBoundingClientRect(), 2)) return true;
+            }
+            return false;
+        }
+        function updateHover() {
+            raf = 0;
+            if (overMottoOrNew(lastX, lastY)) { setLit(false); return; }
+            const target = document.elementFromPoint(lastX, lastY);
+            const overBuyDom = !!(target && target.closest && target.closest('.scene-object[data-id="BUYBTCZONE"], .scene-object[data-id="BUYETHZONE"], .buy-btn, .buy-zone, [id*="buyBtc"], [id*="buyEth"]'));
+            const lit = overBuyDom || overCoin(lastX, lastY) || overBuyZoneElement(lastX, lastY);
+            setLit(lit);
+        }
+        container.addEventListener('pointermove', function (event) {
+            lastX = event.clientX; lastY = event.clientY;
+            if (!raf) raf = requestAnimationFrame(updateHover);
+        }, { passive: true });
+        container.addEventListener('pointerleave', function () {
+            if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            setLit(false);
+        });
+        window.addEventListener('resize', function () { setLit(false); });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMottoHover);
+    else initMottoHover();
+})();
+
+/* ============================================================
+   СТАТИСТИКА ИЗ SUPABASE
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!window.scpmSupabase) return;
+    try {
+        const { count: btcCount, error: errBtc } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'BTC');
+        const { count: ethCount, error: errEth } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'ETH');
+        const elBtc = document.getElementById('statBtc');
+        const elEth = document.getElementById('statEth');
+        if (!errBtc && elBtc) elBtc.textContent = (btcCount || 0).toLocaleString('ru-RU');
+        if (!errEth && elEth) elEth.textContent = (ethCount || 0).toLocaleString('ru-RU');
+    } catch (e) { console.warn('[Index] Stats load error:', e); }
+});
+</script>
+
+</body>
+</html>

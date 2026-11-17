@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCPM Studio — Account</title>
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="logo-group"><span class="logo">SCPM Studio</span><span class="version">Account</span></div>
+    <div id="toolbar">
+      <a href="index.html" class="tool-btn">↩ Side A</a>
+      <a href="sideb.html" class="tool-btn">↪ Side B</a>
+    </div>
+    <div class="status">● ACCOUNT</div>
+  </header>
+
+  <main class="account-shell">
+    <section class="account-card">
+      <h1>Personal Account</h1>
+      <p class="sub">Управление доступом и кошельками SCPM</p>
+
+      <div id="authPanel">
+        <form id="loginForm" name="loginForm">
+          <label>Email<input id="email" name="email" type="email" autocomplete="email" required></label>
+          <label>Password<input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required></label>
+          <button class="primary" type="submit">Sign in</button>
+        </form>
+        <button id="signupBtn" class="secondary" type="button">Create account</button>
+      </div>
+
+      <section id="profilePanel" hidden>
+        <div class="profile-line"><span>Email</span><strong id="userEmail">—</strong></div>
+        <div class="profile-line"><span>Nickname</span><strong id="userNickname">—</strong></div>
+        
+        <!-- Поле для ввода никнейма -->
+        <div style="display: flex; gap: 10px; margin-top: 10px; margin-bottom: 20px;">
+            <input id="nicknameInput" type="text" placeholder="Введите ваш никнейм" style="flex: 1;">
+            <button id="saveNicknameBtn" class="primary" type="button" style="width: auto; margin-top: 0; white-space: nowrap;">Сохранить</button>
+        </div>
+
+        <div class="profile-line"><span>Ethereum Wallet</span><strong id="walletValue">Not connected</strong></div>
+        <button id="walletBtn" class="secondary" type="button">Connect Ethereum wallet</button>
+        
+        <button id="logoutBtn" class="danger" type="button" style="margin-top: 30px;">Sign out</button>
+      </section>
+
+      <div id="accountMessage" class="account-message"></div>
+    </section>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+<script src="js/wallet.js"></script>
+<script src="js/account.js"></script>
+</body>
+</html>

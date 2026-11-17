@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCPM Studio — Side B</title>
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="css/sideb.css">
+    <style>
+    /* Базовые стили (ВСЕ СОХРАНЕНЫ КАК БЫЛО) */
+    .tool-btn.tab-btc.active { background: rgba(247, 147, 26, 0.2) !important; border-color: #f7931a !important; color: #f7931a !important; }
+    .tool-btn.tab-eth.active { background: rgba(98, 126, 234, 0.2) !important; border-color: #627eea !important; color: #627eea !important; }
+    #sceneContainer { overflow: hidden !important; position: relative !important; }
+    
+    #objectLayer.sideb-collection {
+        position: absolute !important; left: 6.25% !important; top: 16.8% !important;
+        width: 82.6% !important; height: 39.06% !important; max-height: 39.06% !important;
+        right: auto !important; bottom: auto !important;
+        display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
+        justify-items: center !important; align-items: start !important; align-content: start !important;
+        gap: 8px 0 !important; padding: 2px 0 !important; margin: 0 !important;
+        overflow-x: hidden !important; overflow-y: auto !important;
+        background: transparent !important; box-sizing: border-box !important;
+        pointer-events: auto !important; z-index: 5 !important;
+    }
+    #objectLayer.sideb-collection::-webkit-scrollbar { width: 5px; }
+    #objectLayer.sideb-collection::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+
+    .nft-collection-item {
+        position: relative !important; width: auto !important; height: auto !important;
+        display: flex !important; flex-direction: column !important; align-items: center !important;
+        margin: 0 !important; padding: 0 !important; cursor: grab;
+    }
+    .nft-collection-item:active { cursor: grabbing; }
+    .nft-collection-item:hover { z-index: 6; }
+
+    .nft-item-serial {
+        margin-top: 8px !important; line-height: 1 !important; font-family: "Courier New", monospace !important;
+        font-size: 11px !important; font-weight: 700 !important; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95);
+        white-space: nowrap; pointer-events: none;
+    }
+
+    .nft-back { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; position: relative; border-radius: 50%; overflow: hidden; }
+    .nft-back-hint { display: none; }
+    .nft-empty-hint { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 70px; }
+    .nft-empty-hint span:first-child { font-family: "Courier New", monospace; font-size: 13px; color: #777; letter-spacing: 2px; }
+    .nft-empty-hint span:last-child { font-family: "Segoe UI", sans-serif; font-size: 11px; color: #999; }
+
+    /* Стиль для гостевой кнопки */
+    #guestLoginBanner {
+        position: absolute;
+        bottom: 91%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        text-align: center;
+        animation: guestFadeIn 0.5s ease;
+    }
+    @keyframes guestFadeIn {
+        from { opacity: 0; transform: translate(-50%, 10px); }
+        to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    #guestLoginBanner a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: rgba(0, 20, 0, 0.85);
+        border: 1px solid #00ff41;
+        border-radius: 6px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        color: #00ff41;
+        text-decoration: none;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
+        box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
+        transition: all 0.2s ease;
+    }
+    #guestLoginBanner a:hover {
+        background: rgba(0, 40, 0, 0.95);
+        box-shadow: 0 0 15px rgba(0, 255, 65, 0.6), inset 0 0 15px rgba(0, 255, 65, 0.5);
+        text-shadow: 0 0 12px rgba(0, 255, 65, 1);
+    }
+    </style>
+
+<style id="sideb-true-3d-coin">
+/* 3D Coin Styles (БЕЗ ИЗМЕНЕНИЙ) */
+.nft-coin-scene { width: var(--nft-coin); height: var(--nft-coin); perspective: 1500px; position: relative; z-index: 1; }
+.nft-coin-3d { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: coinIdleSpin 20s linear infinite; }
+.nft-collection-item:hover .nft-coin-3d, .nft-collection-item.is-dragging .nft-coin-3d { animation-play-state: paused; }
+@keyframes coinIdleSpin { 0% { transform: rotateX(5deg) rotateY(0deg); } 100% { transform: rotateX(5deg) rotateY(360deg); } }
+.coin-face { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.coin-face-front img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; pointer-events: none; user-select: none; }
+.coin-face-front { transform: translateZ(3px); }
+.coin-face-back { transform: rotateY(180deg) translateZ(3px); }
+.coin-edge { position: absolute; inset: 0; width: 100%; height: 100%; transform-style: preserve-3d; pointer-events: none; }
+.coin-edge-segment { position: absolute; left: 50%; top: 50%; height: 6px; margin-top: -3px; transform-style: preserve-3d; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.nft-collection-item[data-coin="BTC"] .coin-edge-segment { background: linear-gradient(to bottom, #fff0a0 0%, #d99b22 22%, #8b5c08 52%, #e7b83c 78%, #563600 100%); box-shadow: 0 0 1px rgba(0,0,0,.75); }
+.nft-collection-item[data-coin="ETH"] .coin-edge-segment { background: linear-gradient(to bottom, #f8fbff 0%, #c5ccd8 22%, #737e91 52%, #dce2eb 78%, #454d5a 100%); box-shadow: 0 0 1px rgba(0,0,0,.75); }
+.nft-sel-ring { display: none; position: absolute; border-radius: 50%; border: 2px solid #f7931a; box-shadow: 0 0 6px rgba(247, 147, 26, 0.55), 0 0 14px rgba(247, 147, 26, 0.28); pointer-events: none; z-index: 30; box-sizing: border-box; }
+.nft-collection-item.selected .nft-sel-ring { display: block; }
+.property strong.copyable { cursor: pointer; border-bottom: 1px dashed rgba(255,255,255,0.25); transition: color 0.15s, border-color 0.15s; }
+.property strong.copyable:hover { color: #4ea8ff; border-bottom-color: #4ea8ff; }
+.property strong.copyable.copied { color: #5d5; border-bottom-color: #5d5; }
+.cassette-tabs { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 12; }
+.cassette-tab { appearance: none; border: none; background: transparent; pointer-events: auto; position: absolute; top: 13.8%; padding: 2px 6px; font-family: "Arial Black", "Arial", sans-serif; font-size: clamp(9px, 1.35vw, 14px); font-weight: 900; letter-spacing: 1.5px; cursor: pointer; line-height: 1.2; transition: text-shadow 0.2s, color 0.2s, opacity 0.2s, transform 0.15s; text-transform: uppercase; }
+.cassette-tab[data-coin="BTC"] { left: 11.3%; color: #d9a03a; text-shadow: none; }
+.cassette-tab[data-coin="ETH"] { right: 11.4%; left: auto; color: #8fa0e0; text-shadow: none; }
+.cassette-tab[data-coin="BTC"].active { color: #d4890a; text-shadow: 0 0 6px #f7931a, 0 0 14px #f7931a, 0 0 28px rgba(247, 147, 26, 0.7), 0 0 42px rgba(247, 147, 26, 0.35); }
+.cassette-tab[data-coin="ETH"].active { color: #a8b8ff; text-shadow: 0 0 6px #627eea, 0 0 14px #627eea, 0 0 28px rgba(98, 126, 234, 0.7), 0 0 42px rgba(98, 126, 234, 0.35); }
+.cassette-tab:not(.active):hover { opacity: 1; transform: scale(1.04); }
+.cassette-tab[data-coin="BTC"]:not(.active):hover { color: rgba(247, 147, 26, 0.7); text-shadow: 0 0 8px rgba(247, 147, 26, 0.4); }
+.cassette-tab[data-coin="ETH"]:not(.active):hover { color: rgba(98, 126, 234, 0.75); text-shadow: 0 0 8px rgba(98, 126, 234, 0.4); }
+</style>
+<style id="sideb-public-layout-match-side-a-0098">
+/* =========================================================
+   SIDE B — ПУБЛИЧНЫЙ РЕЖИМ, КАК НА SIDE A
+   Убираем верхнюю панель и правую Properties-панель.
+   NFT-слой остаётся внутри той же кассеты и продолжает
+   масштабироваться относительно #sceneContainer.
+   ========================================================= */
+#topbar,
+#properties,
+#statusbar {
+    display: none !important;
+}
+
+#workspace {
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: #202020 !important;
+}
+
+#scene {
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+#sceneContainer {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+}
+
+#cassette {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+</style>
+
+<style id="sideb-manual-controls-0099">
+/* =========================================================
+   SIDE B — РУЧНЫЕ НАСТРОЙКИ НАДПИСЕЙ, КОЛЛЕКЦИИ И СКРОЛЛА
+   Все координаты заданы относительно #sceneContainer.
+   Меняй значения только в :root.
+   ========================================================= */
+:root {
+    /* NEW */
+    --b-new-left: 56.5%;
+    --b-new-top: 11.4%;
+    --b-new-width: 8.55%;
+    --b-new-height: 3.9%;
+    --b-new-font: clamp(22.5px, 1.40vw, 30px);
+
+    /* Слоган */
+    --b-motto-left: 6.2%;
+    --b-motto-top: 56.55%;
+    --b-motto-width: 87.6%;
+    --b-motto-height: 6.2%;
+    --b-motto-font: clamp(13px, 1.48vw, 24px);
+
+    /* Видимая область прокрутки NFT */
+    --b-scroll-top: 16.8%;
+    --b-scroll-height: 39.06%;
+
+    /* Отдельный скроллбар — его X можно двигать независимо от NFT */
+    --b-scroll-x: 81.3%;
+    --b-scroll-y: 16.8%;
+    --b-scroll-width: 5px;
+    --b-scroll-thumb: #bbbbbb;
+    --b-scroll-track: transparent;
+
+    /* GOLD BTC / SILVER ETH — вкладки */
+    --b-tabs-top: 14%;
+    --b-btc-left: 22.8%;
+    --b-eth-right: 19.7%;
+    --b-tabs-font: clamp(9px, 1.35vw, 14px);
+
+    /* ВСЕ NFT */
+    --b-all-left: 22.9%;
+    --b-all-top: 16.5%;
+
+    /* МОЯ КОЛЛЕКЦИЯ */
+    --b-mine-right: 18.3%;
+    --b-mine-top: 16.5%;
+
+    /* Буква B */
+    --b-letter-left: 21.1%;
+    --b-letter-top: 11.7%;
+    --b-letter-font: 30px;
+
+    /* SIDE */
+    --b-side-left: 20.9%;
+    --b-side-top: 16%;
+    --b-side-font: 10px;
+
+    /* Сообщение для гостя */
+    --b-guest-left: 50%;
+    --b-guest-bottom: 91%;
+    --b-guest-font: 12px;
+
+    /* Расстояние между NFT */
+    --b-coin-gap-x: 12px;
+    --b-coin-gap-y: 4px;
+
+    /* Номера NFT под монетами */
+    --b-serial-font: 12px;
+    --b-serial-gap: 14px;
+
+    /* Положение и размер всей коллекции */
+    --b-collection-left: 12.5%;
+    --b-collection-top: var(--b-scroll-top);
+    --b-collection-width: 75.4%;
+    --b-collection-height: var(--b-scroll-height);
+    --b-collection-padding-top: 2px;
+}
+
+/* NEW */
+#cassetteNew {
+    left: var(--b-new-left) !important;
+    top: var(--b-new-top) !important;
+    width: var(--b-new-width) !important;
+    height: var(--b-new-height) !important;
+    font-size: var(--b-new-font) !important;
+}
+
+/* Слоган */
+#cassetteMotto {
+    left: var(--b-motto-left) !important;
+    top: var(--b-motto-top) !important;
+    width: var(--b-motto-width) !important;
+    height: var(--b-motto-height) !important;
+    font-size: var(--b-motto-font) !important;
+}
+
+/* Вкладки GOLD BTC / SILVER ETH */
+.cassette-tab {
+    top: var(--b-tabs-top) !important;
+    font-size: var(--b-tabs-font) !important;
+}
+.cassette-tab[data-coin="BTC"] { left: var(--b-btc-left) !important; }
+.cassette-tab[data-coin="ETH"] { right: var(--b-eth-right) !important; }
+
+/* Переключатели ВСЕ NFT / МОЯ КОЛЛЕКЦИЯ */
+#btnAllNfts {
+    left: var(--b-all-left) !important;
+    top: var(--b-all-top) !important;
+}
+#btnMyCollection {
+    right: var(--b-mine-right) !important;
+    top: var(--b-mine-top) !important;
+}
+
+/* Буква B и подпись SIDE */
+.side-glow-letter.side-b-letter {
+    left: var(--b-letter-left) !important;
+    top: var(--b-letter-top) !important;
+    font-size: var(--b-letter-font) !important;
+}
+.side-glow-side.side-b-side {
+    left: var(--b-side-left) !important;
+    top: var(--b-side-top) !important;
+    font-size: var(--b-side-font) !important;
+}
+
+/* Гостевое сообщение */
+#guestLoginBanner {
+    left: var(--b-guest-left) !important;
+    bottom: var(--b-guest-bottom) !important;
+}
+#guestLoginBanner a { font-size: var(--b-guest-font) !important; }
+
+/* Номера под монетами */
+.nft-item-serial {
+    font-size: var(--b-serial-font) !important;
+    margin-top: var(--b-serial-gap) !important;
+}
+
+/* Коллекция: фиксированные колонки по диаметру монеты и заданный gap.
+   Здесь нет shorthand gap, который мог бы перезаписать row/column-gap. */
+#objectLayer.sideb-collection {
+    left: var(--b-collection-left) !important;
+    top: var(--b-collection-top) !important;
+    width: var(--b-collection-width) !important;
+    height: var(--b-collection-height) !important;
+    max-height: var(--b-collection-height) !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, var(--nft-coin)) !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    align-items: start !important;
+    align-content: start !important;
+    column-gap: var(--b-coin-gap-x) !important;
+    row-gap: var(--b-coin-gap-y) !important;
+    padding: var(--b-collection-padding-top) 0 2px 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+#objectLayer.sideb-collection::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Внешний скроллбар: позиция X/Y регулируется отдельно от сетки монет. */
+#nftScrollRail {
+    position: absolute !important;
+    left: var(--b-scroll-x) !important;
+    top: var(--b-scroll-y) !important;
+    width: var(--b-scroll-width) !important;
+    height: var(--b-scroll-height) !important;
+    box-sizing: border-box !important;
+    background: var(--b-scroll-track) !important;
+    border: 1px solid rgba(210, 210, 210, .42) !important;
+    border-radius: 999px !important;
+    z-index: 100 !important;
+    display: block;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0,0,0,.55);
+}
+#nftScrollThumb {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0;
+    width: 100% !important;
+    min-height: 30px;
+    box-sizing: border-box !important;
+    border: 1px solid rgba(255,255,255,.38) !important;
+    border-radius: 999px !important;
+    background: var(--b-scroll-thumb) !important;
+    box-shadow: 0 0 5px rgba(0,0,0,.55), inset 0 0 2px rgba(255,255,255,.55);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+#nftScrollThumb:hover { background: #f7931a !important; }
+#nftScrollThumb:active { cursor: grabbing; }
+</style>
+
+
+
+<style id="side-b-flip-hit-area-only-0102">
+/* Зона клика следует за фактической позицией буквы B, заданной в --b-letter-*. */
+#sceneContainer > a#btnFlipSide.side-letter-flip[href="index.html"] {
+    left: var(--b-letter-left, 21.1%) !important;
+    top: var(--b-letter-top, 11.7%) !important;
+    width: 88px !important;
+    height: 92px !important;
+    transform: translate(-50%, -50%) !important;
+    display: block !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+.side-glow-letter.side-b-letter,
+.side-glow-side.side-b-side {
+    pointer-events: none !important;
+}
+</style>
+
+</head>
+<body>
+<div id="app">
+    <header id="topbar">
+        <div class="logo-group">
+            <span class="logo">SCPM Studio</span>
+            <span class="version">Side B</span>
+        </div>
+        <div id="toolbar">
+            <a href="index.html" class="tool-btn" style="text-decoration:none; display:inline-flex; align-items:center;">↩ Flip to Side A</a>
+            <a href="account.html" id="accountLink" class="tool-btn" title="Личный кабинет" style="text-decoration:none; display:inline-flex; align-items:center;">♙ Account</a>
+            <div class="toolbar-separator"></div>
+            <button id="tabBtc" class="tool-btn tab-btc active">GOLD BTC</button>
+            <button id="tabEth" class="tool-btn tab-eth">SILVER ETH</button>
+            
+            <!-- Музыкальный плеер -->
+            <button id="btnMusicPrev" class="tool-btn" title="Предыдущий трек" style="font-size:14px; padding:4px 8px;">⏮</button>
+            <button id="btnMusicToggle" class="tool-btn" title="Музыка" style="font-size:16px; padding:4px 10px;">🔇</button>
+            <button id="btnMusicNext" class="tool-btn" title="Следующий трек" style="font-size:14px; padding:4px 8px;">⏭</button>
+        </div>
+        <div class="status" style="color:#627eea;">● COLLECTION</div>
+    </header>
+
+    <main id="workspace">
+        <section id="scene">
+            <div id="sceneContainer">
+                <img id="cassette" src="assets/cassette-b.png" alt="SCPM Cassette Side B">
+                <div id="cassetteNew" aria-hidden="true">NEW</div>
+                <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
+                <div class="cassette-tabs" role="tablist" aria-label="Выбор монеты">
+                    <button type="button" class="cassette-tab active" data-coin="BTC" role="tab" aria-selected="true" title="Коллекция GOLD BTC">GOLD BTC</button>
+                    <button type="button" class="cassette-tab" data-coin="ETH" role="tab" aria-selected="false" title="Коллекция SILVER ETH">SILVER ETH</button>
+                </div>
+
+                <!-- Переключатель -->
+                <div id="collectionToggle">
+                    <button id="btnAllNfts">ВСЕ NFT</button>
+                    <button id="btnMyCollection" class="active">МОЯ КОЛЛЕКЦИЯ</button>
+                </div>
+
+                <div id="objectLayer" class="sideb-collection"></div>
+                <div id="nftScrollRail" aria-label="Прокрутка коллекции NFT" role="scrollbar" aria-controls="objectLayer" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="nftScrollThumb" tabindex="0" aria-label="Перетащить для прокрутки коллекции"></div>
+                </div>
+                
+                <!-- Неоновая кнопка для гостей -->
+                <div id="guestLoginBanner" style="display:none;">
+                    <a href="account.html">
+                        ● ВОЙДИТЕ В АККАУНТ, ЧТОБЫ УВИДЕТЬ ВАШУ КОЛЛЕКЦИЮ
+                    </a>
+                </div>
+
+                <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
+                <span class="side-glow-letter side-b-letter">B</span>
+                <span class="side-glow-side side-b-side">SIDE</span>
+            </div>
+        </section>
+
+        <aside id="properties">
+            <h2>Properties</h2>
+            <div class="property"><span>Selected</span><strong id="selectedNft">None</strong></div>
+            <div class="property"><span>Type</span><strong id="nftType">—</strong></div>
+            <div class="property"><span>Serial</span><strong id="nftSerial" class="copyable" title="Клик — копировать">—</strong></div>
+            <div class="property"><span>TX Hash</span><strong id="nftTx" class="copyable" title="Клик — копировать">—</strong></div>
+            <div class="property"><span>Date</span><strong id="nftDate">—</strong></div>
+        </aside>
+    </main>
+
+    <footer id="statusbar">Side B — NFT Collection</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/sfx.js"></script>
+<script src="js/auth.js?v=2"></script>
+<script>
+class SideBViewer {
+    constructor() {
+        this.layer = null;
+        this.activeTab = 'BTC';
+        this.selectedNft = null;
+        this.viewMode = 'mine';
+        this.coinMeta = {
+            BTC: {
+                title: 'GOLD BTC',
+                sprite: 'assets/sprites/btc.png',
+                back: 'assets/sprites/btc-back.png?v=0074',
+                color: '#f7931a',
+                protocol: 'ORDINALS',
+                engrave: '#3d2804',
+                qrDark: '#5a3505',
+                qrBox: { left: 28, top: 33.2, size: 18 },
+                serialArc: { path: 'M 8,45 A 42,44 0 0 0 92,48', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
+            },
+            ETH: {
+                title: 'SILVER ETH',
+                sprite: 'assets/sprites/eth.png',
+                back: 'assets/sprites/eth-back.png?v=0074',
+                color: '#627eea',
+                protocol: 'ERC-721',
+                engrave: '#1e2228',
+                qrDark: '#3f4348',
+                qrBox: { left: 27.3, top: 33.3, size: 19 },
+                serialArc: { path: 'M 8,43 A 42,46 0 0 0 92,47', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
+            }
+        };
+        this.defaultCoinSize = 118;
+        this._cloudOwned = null;
+        this._cloudUser = null;
+    }
+
+    async init() {
+        this.layer = document.getElementById('objectLayer');
+        if (!this.layer) { console.error('[SideB] objectLayer not found'); return; }
+        this.ensureQrLib();
+        this.syncCoinSize();
+        this.bindTabs();
+        this.bindCopyables();
+        this.bindToggle();
+        await this.checkAuthAndLoad();
+        this.bindAccountBridge();
+    }
+
+    async checkAuthAndLoad() {
+        try {
+            if (!window.scpmAuth) return;
+            var session = await window.scpmAuth.session();
+            this._cloudUser = (session && session.user) ? session.user : null;
+            
+            if (!this._cloudUser) {
+                this.viewMode = 'all';
+            } else {
+                this.viewMode = 'mine';
+            }
+            
+            this.updateToggleUI();
+            await this.loadCloudCollection();
+            this.render();
+            this.updateStatus();
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    bindToggle() {
+        document.getElementById('btnMyCollection')?.addEventListener('click', () => {
+            if (this.viewMode === 'mine') return;
+            this.viewMode = 'mine';
+            this.updateToggleUI();
+            this.loadCloudCollection().then(() => { this.render(); this.updateStatus(); });
+        });
+        
+        document.getElementById('btnAllNfts')?.addEventListener('click', () => {
+            if (this.viewMode === 'all') return;
+            this.viewMode = 'all';
+            this.updateToggleUI();
+            this.loadCloudCollection().then(() => { this.render(); this.updateStatus(); });
+        });
+    }
+
+    updateToggleUI() {
+        var toggle = document.getElementById('collectionToggle');
+        var btnMine = document.getElementById('btnMyCollection');
+        var btnAll = document.getElementById('btnAllNfts');
+        var banner = document.getElementById('guestLoginBanner');
+
+        if (!toggle) return;
+
+        if (this._cloudUser) {
+            toggle.style.display = 'flex';
+            btnMine.classList.toggle('active', this.viewMode === 'mine');
+            btnAll.classList.toggle('active', this.viewMode === 'all');
+            if (banner) banner.style.display = 'none';
+        } else {
+            toggle.style.display = 'none';
+            if (banner) banner.style.display = 'block';
+        }
+    }
+
+    async loadCloudCollection() {
+        this._cloudOwned = null;
+        this._cloudUser = this._cloudUser; // сохраняем
+        try {
+            if (!window.scpmSupabase || !window.scpmAuth) return;
+            var session = await window.scpmAuth.session();
+            
+            let query = window.scpmSupabase.from('nfts').select('*');
+            
+            if (session && session.user) {
+                this._cloudUser = session.user;
+                if (this.viewMode === 'mine') {
+                    query = query.eq('user_id', session.user.id);
+                } else {
+                    query = query.limit(50);
+                }
+            } else {
+                this._cloudUser = null;
+                query = query.limit(50);
+            }
+
+            var res = await query.order('serial', { ascending: true });
+            
+            if (res.error) {
+                console.warn('[SideB] Cloud NFT query:', res.error);
+                return;
+            }
+            this._cloudOwned = (res.data || []).map(function(n) {
+                return {
+                    id: n.id,
+                    coin: n.coin,
+                    serial: n.serial,
+                    tokenId: n.token_id,
+                    tx: n.tx_hash,
+                    passportUrl: n.passport_url,
+                    at: n.created_at ? new Date(n.created_at).getTime() : Date.now()
+                };
+            });
+        } catch (e) { console.warn(e); }
+    }
+
+    bindAccountBridge() {
+        var link = document.getElementById('accountLink');
+        if (link) {
+            if (this._cloudUser) {
+                link.title = 'Личный кабинет — ' + (this._cloudUser.email || 'wallet');
+            } else {
+                link.title = 'Войти в личный кабинет';
+            }
+        }
+    }
+
+    ensureQrLib() {
+        if (typeof window.qrcode !== 'undefined') return;
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+        s.onload = () => this.render();
+        document.head.appendChild(s);
+    }
+
+    nftUrl(coin, serialText) {
+        if (window.qrTools) return qrTools.nftUrl(coin, serialText);
+        return 'https://scpm-studio.example/nft.html?coin=' + encodeURIComponent(coin) + '&serial=' + encodeURIComponent(serialText);
+    }
+
+    qrData(url) {
+        if (window.qrTools) return qrTools.dataUrl(url, 140);
+        if (typeof window.qrcode === 'undefined') return null;
+        try {
+            var q = qrcode(0, 'M');
+            q.addData(url); q.make();
+            return q.createDataURL(4, 0);
+        } catch (e) { return null; }
+    }
+
+    syncCoinSize() {
+        var size = this.defaultCoinSize;
+        try {
+            var keys = ['scpm_autosave', 'scpm_project_autosave', 'scpm_project', 'scpmStudio'];
+            var data = null;
+            for (var i = 0; i < keys.length; i++) {
+                var raw = localStorage.getItem(keys[i]);
+                if (raw) { try { data = JSON.parse(raw); break; } catch (e) {} }
+            }
+            if (data) {
+                var objs = data.objects || [];
+                for (var j = 0; j < objs.length; j++) {
+                    if (objs[j].id === 'btc') {
+                        var w = objs[j].width || this.defaultCoinSize;
+                        var sc = objs[j].scale != null ? objs[j].scale : 1;
+                        size = Math.round(w * sc);
+                        break;
+                    }
+                }
+            }
+        } catch (e) {}
+        if (size < 40) size = this.defaultCoinSize;
+        if (size > 400) size = 400;
+        this._coinPx = size;
+        document.documentElement.style.setProperty('--nft-coin', size + 'px');
+    }
+
+    coinPx() { return this._coinPx || this.defaultCoinSize; }
+    protoOf(nft) { return (this.coinMeta[nft.coin] || this.coinMeta.BTC).protocol; }
+    serialTextOf(nft) { return '#' + String(nft.serial != null ? nft.serial : nft.id).padStart(8, '0'); }
+
+    bindTabs() {
+        document.getElementById('tabBtc')?.addEventListener('click', () => this.switchTab('BTC'));
+        document.getElementById('tabEth')?.addEventListener('click', () => this.switchTab('ETH'));
+        document.querySelectorAll('.cassette-tab').forEach(btn => btn.addEventListener('click', () => this.switchTab(btn.getAttribute('data-coin'))));
+    }
+
+    switchTab(coin) {
+        this.activeTab = coin;
+        this.selectedNft = null;
+        this.clearProperties();
+        document.getElementById('tabBtc')?.classList.toggle('active', coin === 'BTC');
+        document.getElementById('tabEth')?.classList.toggle('active', coin === 'ETH');
+        document.querySelectorAll('.cassette-tab').forEach(btn => {
+            var on = btn.getAttribute('data-coin') === coin;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        this.render();
+        this.updateStatus();
+    }
+
+    owned() { return Array.isArray(this._cloudOwned) ? this._cloudOwned : JSON.parse(localStorage.getItem('scpm_owned_nfts') || '[]'); }
+    filtered() { return this.owned().filter(n => n.coin === this.activeTab); }
+
+    makeQrTransparent(qr, dataUrl, darkColor) {
+        var img = new Image();
+        img.onload = function () {
+            try {
+                var c = document.createElement('canvas');
+                c.width = img.naturalWidth; c.height = img.naturalHeight;
+                var ctx = c.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                var im = ctx.getImageData(0, 0, c.width, c.height);
+                var d = im.data;
+                var hex = String(darkColor || '#333333').replace('#','');
+                var cr = parseInt(hex.slice(0,2),16) || 51;
+                var cg = parseInt(hex.slice(2,4),16) || 51;
+                var cb = parseInt(hex.slice(4,6),16) || 51;
+                for (var i = 0; i < d.length; i += 4) {
+                    var lum = (d[i] * 0.299) + (d[i+1] * 0.587) + (d[i+2] * 0.114);
+                    if (lum >= 235) { d[i+3] = 0; continue; }
+                    d[i] = cr; d[i+1] = cg; d[i+2] = cb;
+                    d[i+3] = Math.max(90, Math.round(255 * (235 - lum) / 235));
+                }
+                ctx.putImageData(im, 0, 0);
+                qr.src = c.toDataURL('image/png');
+            } catch (e) {}
+        };
+        img.src = dataUrl;
+    }
+
+    buildBack(coin, meta, serialText) {
+        var disc = document.createElement('div');
+        disc.className = 'nft-back';
+
+        var base = document.createElement('img');
+        base.src = meta.back;
+        base.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+        if (coin === 'ETH') base.style.setProperty('transform','scale(0.80)','important');
+        if (coin === 'BTC') base.style.setProperty('transform','scale(0.81)','important');
+        
+        disc.appendChild(base);
+
+        var d = this.qrData(this.nftUrl(coin, serialText));
+        if (d) {
+            var qr = document.createElement('img');
+            qr.src = d;
+            var box = meta.qrBox || { left: 22, top: 30, size: 20 };
+            qr.style.cssText = `position:absolute;left:${box.left}%;top:${box.top}%;width:${box.size}%;height:${box.size}%;image-rendering:pixelated;border-radius:0;background:transparent;`;
+            disc.appendChild(qr);
+            this.makeQrTransparent(qr, d, meta.qrDark);
+        }
+
+        var arc = meta.serialArc;
+        var uid = 'a' + Math.random().toString(36).slice(2, 7);
+        var ns = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        
+        svg.style.cssText = `position:absolute;inset:0;width:100%;height:${arc.svgH};pointer-events:none;`;
+        
+        var defs = document.createElementNS(ns, 'defs');
+        var pB = document.createElementNS(ns, 'path');
+        pB.setAttribute('id', uid + 'b'); pB.setAttribute('d', arc.path); pB.setAttribute('fill', 'none');
+        defs.appendChild(pB); svg.appendChild(defs);
+
+        var te = document.createElementNS(ns, 'text');
+        te.setAttribute('fill', meta.engrave);
+        te.style.cssText = `font-family:"Arial Black",Arial;font-weight:900;font-size:${arc.fontSize}px;letter-spacing:${arc.letterSpacing}px;opacity:.95;filter:drop-shadow(0 1px 0 rgba(255,255,255,.4)) drop-shadow(0 -1px 0 rgba(0,0,0,.45));`;
+        var tp = document.createElementNS(ns, 'textPath');
+        tp.setAttribute('href', '#' + uid + 'b'); tp.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + uid + 'b');
+        tp.setAttribute('startOffset', '50%'); tp.setAttribute('text-anchor', 'middle');
+        tp.textContent = serialText;
+        te.appendChild(tp); svg.appendChild(te); disc.appendChild(svg);
+        return disc;
+    }
+
+    render() {
+        if (!this.layer) return;
+        this.layer.innerHTML = '';
+        this.layer.classList.add('sideb-collection');
+        var list = this.filtered();
+        var meta = this.coinMeta[this.activeTab];
+        
+        if (list.length === 0) {
+            var msg = (this.viewMode === 'mine') ? 'Купите NFT на стороне A' : 'Проданных монет пока нет';
+            this.layer.innerHTML = '<div class="nft-empty-hint"><span>КОЛЛЕКЦИЯ ПУСТА</span><span>' + msg + '</span></div>';
+            return;
+        }
+
+        list.forEach(nft => {
+            var card = document.createElement('div');
+            card.className = 'nft-collection-item';
+            card.dataset.id = nft.id;
+            card.dataset.coin = nft.coin;
+            card.title = 'Кликните и удерживайте для вращения';
+
+            var scene = document.createElement('div');
+            scene.className = 'nft-coin-scene';
+
+            var coin3d = document.createElement('div');
+            coin3d.className = 'nft-coin-3d';
+
+            var edge = document.createElement('div');
+            edge.className = 'coin-edge';
+            var edgeSegments = 64;
+            var edgeRadius = this.coinPx() * 0.40; 
+            var segmentWidth = (2 * Math.PI * edgeRadius / edgeSegments) * 1.08;
+            for (let i = 0; i < edgeSegments; i++) {
+                let segment = document.createElement('div');
+                let angle = (360 / edgeSegments) * i;
+                segment.className = 'coin-edge-segment';
+                segment.style.width = segmentWidth + 'px';
+                segment.style.marginLeft = (-segmentWidth / 2) + 'px';
+                segment.style.transform = `rotateZ(${angle}deg) translateY(${-edgeRadius}px) rotateX(90deg)`;
+                edge.appendChild(segment);
+            }
+            coin3d.appendChild(edge);
+
+            var front = document.createElement('div');
+            front.className = 'coin-face coin-face-front';
+            var imgFront = document.createElement('img');
+            imgFront.src = meta.sprite;
+            imgFront.draggable = false;
+            front.appendChild(imgFront);
+            coin3d.appendChild(front);
+
+            var back = document.createElement('div');
+            back.className = 'coin-face coin-face-back';
+            var backContent = this.buildBack(nft.coin, meta, this.serialTextOf(nft));
+            back.appendChild(backContent);
+            coin3d.appendChild(back);
+
+            scene.appendChild(coin3d);
+
+            var serial = document.createElement('div');
+            serial.className = 'nft-item-serial';
+            serial.textContent = this.serialTextOf(nft) + ' • ' + this.protoOf(nft);
+            serial.style.color = meta.color;
+
+            card.appendChild(scene);
+            card.appendChild(serial);
+
+            let isDragging = false;
+            let prevX = 0, prevY = 0;
+            let rotX = 5, rotY = 0;
+            let velocityX = 0, velocityY = 0;
+            let animationFrame;
+
+            const updateRotation = () => {
+                coin3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            };
+
+            const applyInertia = () => {
+                if (isDragging) return;
+                if (Math.abs(velocityX) < 0.1 && Math.abs(velocityY) < 0.1) {
+                    coin3d.style.animation = 'coinIdleSpin 20s linear infinite';
+                    coin3d.style.transform = '';
+                    return;
+                }
+                rotY += velocityX;
+                rotX -= velocityY;
+                velocityX *= 0.95;
+                velocityY *= 0.95;
+                updateRotation();
+                animationFrame = requestAnimationFrame(applyInertia);
+            };
+
+            scene.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                card.classList.add('is-dragging');
+                cancelAnimationFrame(animationFrame);
+                if (coin3d.style.animation) {
+                    try {
+                        const st = window.getComputedStyle(coin3d);
+                        const matrix = new DOMMatrixReadOnly(st.transform);
+                        rotY = Math.atan2(matrix.m13, matrix.m11) * (180 / Math.PI);
+                        rotX = 5;
+                    } catch (err) {}
+                    coin3d.style.animation = 'none';
+                }
+                prevX = e.clientX;
+                prevY = e.clientY;
+                velocityX = 0; velocityY = 0;
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - prevX;
+                const dy = e.clientY - prevY;
+                rotY += dx * 0.8;
+                rotX -= dy * 0.8;
+                velocityX = dx * 0.8;
+                velocityY = dy * 0.8;
+                updateRotation();
+                prevX = e.clientX;
+                prevY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                card.classList.remove('is-dragging');
+                applyInertia();
+            });
+
+            card.addEventListener('click', (e) => {
+                if (Math.abs(velocityX) > 2 || Math.abs(velocityY) > 2) return;
+                this.selectNft(nft, card);
+            });
+
+            this.layer.appendChild(card);
+        });
+    }
+
+    clearProperties() {
+        document.getElementById('selectedNft').textContent = 'None';
+        document.getElementById('nftType').textContent = '—';
+        document.getElementById('nftSerial').textContent = '—';
+        document.getElementById('nftTx').textContent = '—';
+        document.getElementById('nftDate').textContent = '—';
+    }
+
+    selectNft(nft, card) {
+        this.selectedNft = nft;
+        this.layer.querySelectorAll('.nft-collection-item').forEach(el => el.classList.remove('selected'));
+        if (card) card.classList.add('selected');
+        
+        var meta = this.coinMeta[nft.coin] || {};
+        document.getElementById('selectedNft').textContent = meta.title + ' ' + this.serialTextOf(nft);
+        document.getElementById('nftType').textContent = nft.coin + ' • ' + this.protoOf(nft);
+        document.getElementById('nftSerial').textContent = this.serialTextOf(nft);
+        document.getElementById('nftTx').textContent = nft.tx || '—';
+        document.getElementById('nftDate').textContent = nft.at ? new Date(nft.at).toLocaleString() : '—';
+    }
+
+    updateStatus() {
+        var bar = document.getElementById('statusbar');
+        if (bar) {
+            var modeText = (this.viewMode === 'mine') ? 'Моя коллекция' : 'Все NFT';
+            bar.textContent = 'Side B — ' + modeText + ' | ' + this.activeTab + ': ' + this.filtered().length + ' NFT';
+        }
+        
+        var banner = document.getElementById('guestLoginBanner');
+        if (banner) {
+            banner.style.display = this._cloudUser ? 'none' : 'block';
+        }
+    }
+
+    bindCopyables() {
+        var self = this;
+        var serial = document.getElementById('nftSerial');
+        var tx = document.getElementById('nftTx');
+        if (serial && !serial._copyBound) {
+            serial._copyBound = true;
+            serial.addEventListener('click', () => self.copyText(self.selectedNft ? self.serialTextOf(self.selectedNft) : serial.textContent, serial));
+        }
+        if (tx && !tx._copyBound) {
+            tx._copyBound = true;
+            tx.addEventListener('click', () => self.copyText(self.selectedNft?.tx || tx.textContent, tx));
+        }
+    }
+
+    copyText(text, el) {
+        if (!text || text === '—') return;
+        navigator.clipboard.writeText(String(text)).then(() => {
+            if (el) {
+                el.classList.add('copied');
+                var prev = el.textContent;
+                el.textContent = 'Скопировано';
+                setTimeout(() => { el.classList.remove('copied'); el.textContent = prev; }, 900);
+            }
+        });
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    window.sideb = new SideBViewer();
+    sideb.init();
+});
+</script>
+
+<script id="sideb-independent-scrollbar-0100">
+(function () {
+    const layer = document.getElementById('objectLayer');
+    const rail = document.getElementById('nftScrollRail');
+    const thumb = document.getElementById('nftScrollThumb');
+    if (!layer || !rail || !thumb) return;
+
+    let dragging = false;
+    let dragStartY = 0;
+    let dragStartScroll = 0;
+    let pendingWheelTop = null;
+    let wheelFinishTimer = 0;
+    let wheelDeltaBuffer = 0;
+    let wheelBufferTimer = 0;
+
+    function getCards() {
+        return Array.from(layer.querySelectorAll('.nft-collection-item'));
+    }
+
+    // Finds the vertical distance between row 1 and row 2 (3 coins per row).
+    function getRowStep() {
+        const cards = getCards();
+        if (!cards.length) return Math.max(1, layer.clientHeight);
+
+        if (cards.length >= 4) {
+            const firstTop = cards[0].offsetTop;
+            const secondRowTop = cards[3].offsetTop;
+            const measured = secondRowTop - firstTop;
+            if (measured > 0) return measured;
+        }
+
+        const style = window.getComputedStyle(layer);
+        const rowGap = parseFloat(style.rowGap) || 0;
+        return cards[0].offsetHeight + rowGap;
+    }
+
+    function updateScrollbar() {
+        const cards = getCards();
+        const viewport = layer.clientHeight;
+        const content = layer.scrollHeight;
+        const track = rail.clientHeight;
+
+        // If there is more than one row, keep the control visible even when
+        // the current viewport happens to fit all rows. This prevents the
+        // independently positioned control from seeming to disappear.
+        if (!cards.length || cards.length <= 3 || !viewport || !track) {
+            rail.style.display = 'none';
+            return;
+        }
+
+        rail.style.display = 'block';
+        rail.style.visibility = 'visible';
+        rail.style.pointerEvents = 'auto';
+
+        const maxScroll = Math.max(0, content - viewport);
+        const canScroll = maxScroll > 1;
+        const thumbHeight = canScroll
+            ? Math.max(30, Math.min(track, track * viewport / content))
+            : Math.min(track, 42);
+        const maxThumbTop = Math.max(0, track - thumbHeight);
+        const thumbTop = canScroll && maxThumbTop > 0
+            ? (layer.scrollTop / maxScroll) * maxThumbTop
+            : 0;
+
+        thumb.style.height = thumbHeight + 'px';
+        thumb.style.top = thumbTop + 'px';
+        thumb.style.opacity = canScroll ? '1' : '.72';
+        thumb.style.cursor = canScroll ? 'grab' : 'default';
+        rail.style.cursor = canScroll ? 'pointer' : 'default';
+        rail.setAttribute('aria-valuenow', canScroll
+            ? String(Math.round((layer.scrollTop / maxScroll) * 100))
+            : '0');
+    }
+
+    layer.addEventListener('scroll', updateScrollbar, { passive: true });
+
+    // Mouse-wheel / touchpad: one gesture advances by exactly one NFT row.
+    // 3 columns mean one row = NFTs #1-3, then #4-6, and so on.
+    layer.addEventListener('wheel', function (event) {
+        if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+
+        const maxScroll = Math.max(0, layer.scrollHeight - layer.clientHeight);
+        if (maxScroll <= 1) return;
+
+        event.preventDefault();
+
+        let delta = event.deltaY;
+        if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) delta *= 40;
+        else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) delta *= layer.clientHeight;
+
+        let steps = 0;
+        const absDelta = Math.abs(delta);
+
+        // A normal mouse wheel notch (about 100-120 px) is one row.
+        // Small trackpad deltas are accumulated until they form one gesture.
+        if (absDelta >= 50) {
+            steps = Math.max(1, Math.round(absDelta / 110));
+            wheelDeltaBuffer = 0;
+            clearTimeout(wheelBufferTimer);
+        } else {
+            wheelDeltaBuffer += delta;
+            clearTimeout(wheelBufferTimer);
+            wheelBufferTimer = setTimeout(() => { wheelDeltaBuffer = 0; }, 180);
+            if (Math.abs(wheelDeltaBuffer) >= 55) {
+                steps = Math.max(1, Math.floor(Math.abs(wheelDeltaBuffer) / 55));
+                wheelDeltaBuffer -= Math.sign(wheelDeltaBuffer) * steps * 55;
+            }
+        }
+
+        if (!steps) return;
+
+        const rowStep = getRowStep();
+        if (!rowStep) return;
+
+        const baseTop = pendingWheelTop == null ? layer.scrollTop : pendingWheelTop;
+        const currentRow = Math.round(baseTop / rowStep);
+        const maxRow = Math.max(0, Math.ceil(maxScroll / rowStep));
+        const direction = Math.sign(delta);
+        const nextRow = Math.max(0, Math.min(maxRow, currentRow + direction * steps));
+        const nextTop = Math.min(maxScroll, nextRow * rowStep);
+
+        pendingWheelTop = nextTop;
+        layer.scrollTo({ top: nextTop, behavior: 'smooth' });
+
+        clearTimeout(wheelFinishTimer);
+        wheelFinishTimer = setTimeout(() => {
+            pendingWheelTop = null;
+            updateScrollbar();
+        }, 320);
+    }, { passive: false });
+
+    // Drag the custom thumb.
+    thumb.addEventListener('pointerdown', function (event) {
+        const maxScroll = layer.scrollHeight - layer.clientHeight;
+        if (maxScroll <= 1) return;
+        dragging = true;
+        dragStartY = event.clientY;
+        dragStartScroll = layer.scrollTop;
+        thumb.setPointerCapture(event.pointerId);
+        event.preventDefault();
+    });
+
+    thumb.addEventListener('pointermove', function (event) {
+        if (!dragging) return;
+        const maxScroll = layer.scrollHeight - layer.clientHeight;
+        const thumbTravel = rail.clientHeight - thumb.offsetHeight;
+        if (maxScroll <= 0 || thumbTravel <= 0) return;
+        const deltaY = event.clientY - dragStartY;
+        layer.scrollTop = dragStartScroll + deltaY * (maxScroll / thumbTravel);
+    });
+
+    function stopDragging() { dragging = false; }
+    thumb.addEventListener('pointerup', stopDragging);
+    thumb.addEventListener('pointercancel', stopDragging);
+    thumb.addEventListener('lostpointercapture', stopDragging);
+
+    // Clicking the track pages to the clicked position.
+    rail.addEventListener('pointerdown', function (event) {
+        if (event.target === thumb || thumb.contains(event.target)) return;
+        const maxScroll = layer.scrollHeight - layer.clientHeight;
+        const thumbTravel = rail.clientHeight - thumb.offsetHeight;
+        if (maxScroll <= 0 || thumbTravel <= 0) return;
+        const rect = rail.getBoundingClientRect();
+        const targetTop = Math.max(0, Math.min(thumbTravel,
+            event.clientY - rect.top - thumb.offsetHeight / 2));
+        layer.scrollTo({ top: (targetTop / thumbTravel) * maxScroll, behavior: 'smooth' });
+    });
+
+    const mutationObserver = new MutationObserver(() => requestAnimationFrame(updateScrollbar));
+    mutationObserver.observe(layer, { childList: true, subtree: true });
+
+    if ('ResizeObserver' in window) {
+        const resizeObserver = new ResizeObserver(updateScrollbar);
+        resizeObserver.observe(layer);
+        resizeObserver.observe(rail);
+    }
+
+    window.addEventListener('resize', updateScrollbar);
+    requestAnimationFrame(updateScrollbar);
+    setTimeout(updateScrollbar, 250);
+    setTimeout(updateScrollbar, 800);
+})();
+</script>
+
+</body>
+</html>
