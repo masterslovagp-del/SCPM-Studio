@@ -1,0 +1,70 @@
+/* =========================================================
+   SCPM Studio — Account Page (Dark Theme)
+   ========================================================= */
+.account-shell {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 20px;
+    min-height: calc(100vh - 120px);
+    box-sizing: border-box;
+}
+
+.account-card {
+    width: min(600px, 100%);
+    padding: 32px;
+    border: 1px solid #404040;
+    border-radius: 14px;
+    background: #242424;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    box-sizing: border-box;
+    color: #ffffff;
+}
+
+.account-card h1 { margin: 0 0 6px; font-size: 24px; }
+.account-card .sub { margin: 0 0 24px; color: #9b9b9b; font-size: 14px; }
+
+.account-card label {
+    display: block; margin: 16px 0; font-weight: 600; color: #c5c5c5; font-size: 14px;
+}
+
+.account-card input {
+    display: block; width: 100%; margin-top: 8px; padding: 12px;
+    background: #1b1b1b; border: 1px solid #555; border-radius: 8px;
+    box-sizing: border-box; font: inherit; color: #fff; outline: none; transition: border-color 0.2s;
+}
+.account-card input:focus { border-color: #4ea8ff; }
+
+.account-card button {
+    display: block; width: 100%; margin-top: 14px; padding: 12px 14px;
+    border-radius: 8px; border: 1px solid #555; background: #333;
+    color: #fff; cursor: pointer; font: inherit; font-weight: 600;
+    transition: background 0.15s, border-color 0.15s;
+}
+.account-card button:hover { background: #444; border-color: #777; }
+.account-card button.primary { background: #4ea8ff; color: #1b1b1b; border-color: #4ea8ff; }
+.account-card button.primary:hover { background: #6bb5ff; }
+.account-card button.danger { border-color: #ff5c5c; color: #ff5c5c; background: transparent; }
+.account-card button.danger:hover { background: rgba(255, 92, 92, 0.1); }
+
+.profile-line {
+    display: flex; justify-content: space-between; gap: 20px;
+    padding: 14px 0; border-bottom: 1px solid #404040;
+    color: #bdbdbd; font-size: 14px;
+}
+.profile-line strong { overflow-wrap: anywhere; text-align: right; color: #fff; }
+
+.account-message { min-height: 24px; margin-top: 20px; color: #bdbdbd; font-size: 14px; }
+.account-message.error { color: #ff5c5c; }
+.tool-btn { text-decoration: none; }
+
+/* Фикс прокрутки для Личного Кабинета */
+html, body {
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100vh !important;
+}
+#app {
+    height: auto !important;
+    min-height: 100vh !important;
+}

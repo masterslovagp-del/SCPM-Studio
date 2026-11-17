@@ -1,0 +1,474 @@
+/*
+SCPM Studio
+Side B — NFT Collection Styles
+Build 0039 — согласовано с sideb.js Build 0039
+  • grid 3 колонки (не flex)
+  • карточка height: auto (компактная)
+  • скролл только при > 3 монет
+*/
+
+:root {
+    --nft-coin: 150px;
+}
+
+/* =========================================================
+   TOOLBAR TABS
+   ========================================================= */
+.tool-btn.tab-btc.active {
+    background: rgba(247, 147, 26, 0.2) !important;
+    border-color: #f7931a !important;
+    color: #f7931a !important;
+}
+.tool-btn.tab-eth.active {
+    background: rgba(98, 126, 234, 0.2) !important;
+    border-color: #627eea !important;
+    color: #627eea !important;
+}
+
+/* =========================================================
+   Clip everything to cassette frame
+   ========================================================= */
+#sceneContainer {
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* =========================================================
+   РАБОЧАЯ ЗОНА — GRID 3 колонки, монеты слева направо
+   Геометрия: left 6.25% / width 82.6% — НЕ МЕНЯТЬ
+   ========================================================= */
+#objectLayer.sideb-collection {
+    position: absolute !important;
+    left: 6.25% !important;
+    top: 16.8% !important;
+    width: 82.6% !important;
+    height: 39.06% !important;
+    max-height: 39.06% !important;
+    right: auto !important;
+    bottom: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    justify-items: center !important;
+    align-items: start !important;
+    align-content: start !important;
+    gap: 8px 0 !important;
+    
+    /* 👇 ДОБАВЛЕНО: отступ сверху — сдвигает начало контента вниз */
+    padding: 14px 0 2px 0 !important;   /* было: 2px 0 */
+    
+    margin: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    pointer-events: auto !important;
+    z-index: 5 !important;
+    
+    /* 👇 НОВОЕ: маска — монеты плавно исчезают сверху и снизу */
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0px,
+        black 18px,
+        black calc(100% - 18px),
+        transparent 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0px,
+        black 18px,
+        black calc(100% - 18px),
+        transparent 100%
+    );
+}
+
+#objectLayer.sideb-collection::-webkit-scrollbar {
+    width: 5px;
+}
+#objectLayer.sideb-collection::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 3px;
+}
+#objectLayer.sideb-collection::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+#objectLayer.sideb-collection::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* =========================================================
+   NFT cards — КОМПАКТНАЯ карточка, height: auto
+   ========================================================= */
+.nft-collection-item {
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-shrink: 0 !important;
+    cursor: pointer;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: transform 0.15s ease;
+    pointer-events: auto;
+}
+
+.nft-collection-item:hover {
+    z-index: 6;
+}
+
+.nft-collection-item.selected {
+    /* circular ring is on .nft-flip::after (see sideb.html Build 0080) */
+}
+.nft-collection-item.selected::after {
+    display: none !important;
+}
+
+.nft-item-img {
+    width: var(--nft-coin) !important;
+    height: var(--nft-coin) !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.28));
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.nft-back-disc {
+    width: var(--nft-coin) !important;
+    height: var(--nft-coin) !important;
+    min-width: var(--nft-coin) !important;
+    min-height: var(--nft-coin) !important;
+    max-width: var(--nft-coin) !important;
+    max-height: var(--nft-coin) !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.28));
+    /* ▼▼▼ ДОБАВЬ ЭТИ 2 СТРОКИ ▼▼▼ */
+    background: transparent !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,.35) !important;
+}
+
+.nft-item-serial {
+    margin-top: 2px !important;
+    font-family: "Courier New", monospace !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95);
+    white-space: nowrap;
+    line-height: 1 !important;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+.nft-empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+    min-height: 70px;
+    grid-column: 1 / -1;
+}
+.nft-empty-hint span:first-child {
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+    color: #777;
+    letter-spacing: 2px;
+}
+.nft-empty-hint span:last-child {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 11px;
+    color: #999;
+}
+
+/* =========================================================
+   Build 0080 — 3D flip · circular select · idle spin
+   (mirrors inline styles in sideb.html for consistency)
+   ========================================================= */
+.nft-collection-item {
+    perspective: 900px;
+}
+.nft-flip {
+    position: relative;
+    width: var(--nft-coin);
+    height: var(--nft-coin);
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.4, 0.15, 0.2, 1);
+}
+.nft-collection-item.is-flipped .nft-flip {
+    transform: rotateY(180deg);
+}
+.nft-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nft-face-front { transform: rotateY(0deg); }
+.nft-face-back  { transform: rotateY(180deg); }
+
+.nft-face-front .nft-item-img {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    animation: nftIdleSpin 18s linear infinite;
+}
+.nft-collection-item:hover .nft-face-front .nft-item-img,
+.nft-collection-item.is-flipped .nft-face-front .nft-item-img {
+    animation-play-state: paused;
+}
+@keyframes nftIdleSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+
+
+
+
+
+/* Build 0081 — DOM selection ring, gold for BTC */
+
+.nft-collection-item.selected 
+.nft-collection-item.selected::after,
+.nft-collection-item .nft-flip::after {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* Build 0081 overrides */
+
+.nft-collection-item:hover .nft-face-front .nft-item-img {
+    animation-play-state: running !important;
+}
+
+
+/* Build 0082 */
+
+.nft-collection-item.is-flipped .nft-face-front { display: none !important; }
+.nft-collection-item.is-flipped .nft-face-back { display: flex !important; }
+.nft-face-back { display: none; }
+
+
+/* Build 0083 — single source for selection ring size */
+.nft-sel-ring {
+    display: none;
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid #f7931a;
+    box-shadow:
+        0 0 6px rgba(247, 147, 26, 0.55),
+        0 0 14px rgba(247, 147, 26, 0.28);
+    pointer-events: none;
+    z-index: 30;
+    box-sizing: border-box;
+}
+.nft-collection-item.selected .nft-sel-ring {
+    display: block;
+}
+/* =========================================================
+SIDE B — Надписи NEW и ВЕЛИЧИЕ (копия со Side A)
+========================================================= */
+
+#cassetteMotto {
+    position: absolute;
+    left: 6.2%;
+    top: 56.55%;
+    width: 87.6%;
+    height: 6.2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 2%;
+    box-sizing: border-box;
+    color: rgba(210, 181, 125, 0.78);
+    font-family: "Roboto Condensed", "Arial Narrow", "Segoe UI", Arial, sans-serif;
+    font-size: clamp(13px, 1.48vw, 24px);
+    font-weight: 700;
+    letter-spacing: .7px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 30;
+    opacity: 0.9;
+    transition:
+        color .22s ease,
+        text-shadow .22s ease,
+        opacity .22s ease,
+        transform .22s ease;
+}
+
+#cassetteMotto.is-lit {
+    color: #00ff41;
+    opacity: 1;
+    text-shadow:
+        0 0 2px rgba(0, 255, 65, .95),
+        0 0 5px rgba(0, 255, 65, .72),
+        0 0 10px rgba(0, 255, 65, .42),
+        0 0 16px rgba(0, 255, 65, .18);
+    transform: translateY(-1px);
+}
+
+#cassetteNew {
+    position: absolute;
+    left: 57.5%;
+    top: 11.4%;
+    width: 8.55%;
+    height: 3.9%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #d82d63;
+    font-family: "Roboto Condensed", "Arial Narrow", "Segoe UI", Arial, sans-serif;
+    font-size: clamp(22.5px, 1.40vw, 30px);
+    font-weight: 800;
+    letter-spacing: .15px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 31;
+    opacity: .96;
+    transition: color .20s ease, text-shadow .20s ease, opacity .20s ease;
+}
+
+#cassetteNew.is-lit {
+    color: #ff4b8b;
+    opacity: 1;
+    text-shadow:
+        0 0 1px rgba(255, 75, 139, .95),
+        0 0 3px rgba(255, 75, 139, .68),
+        0 0 6px rgba(255, 75, 139, .30);
+}
+
+@media (max-width: 900px) {
+    #cassetteMotto {
+        font-size: clamp(11px, 1.55vw, 20px);
+        letter-spacing: .7px;
+    }
+}
+
+@media (max-width: 600px) {
+    #cassetteMotto {
+        font-size: clamp(9px, 1.75vw, 16px);
+        letter-spacing: .45px;
+    }
+}
+
+/* =========================================================
+   ПЕРЕКЛЮЧАТЕЛЬ КОЛЛЕКЦИЙ (1 В 1 КАК ВКЛАДКИ GOLD BTC / SILVER ETH)
+   ========================================================= */
+#collectionToggle {
+    position: absolute;
+    inset: 0;
+    display: none; 
+    z-index: 20;
+    pointer-events: none; 
+}
+
+/* Шрифт и размер 1 в 1 как у .cassette-tab */
+#collectionToggle button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    position: absolute;
+    padding: 2px 6px;
+    font-family: "Arial Black", "Arial", sans-serif;
+    font-size: clamp(9px, 1.35vw, 14px);
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    line-height: 1.2;
+    transition: text-shadow 0.2s, color 0.2s, opacity 0.2s, transform 0.15s;
+    text-transform: uppercase;
+    pointer-events: auto;
+}
+
+/* =========================================================
+   ЛЕВАЯ НАДПИСЬ (ВСЕ NFT) — СТИЛЬ SILVER ETH
+   ========================================================= */
+#btnAllNfts {
+    top: 16.5%;       
+    left: 11.5%;
+    color: #8fa0e0;
+    text-shadow: none;
+}
+
+/* Активное состояние (когда "ВСЕ NFT" выбрано) */
+#btnAllNfts.active {
+    color: #a8b8ff;
+    text-shadow: 
+        0 0 6px #627eea, 
+        0 0 14px #627eea, 
+        0 0 28px rgba(98, 126, 234, 0.7), 
+        0 0 42px rgba(98, 126, 234, 0.35);
+}
+
+/* Ховер на неактивную */
+#btnAllNfts:not(.active):hover {
+    opacity: 1;
+    transform: scale(1.04);
+    color: rgba(98, 126, 234, 0.75);
+    text-shadow: 0 0 8px rgba(98, 126, 234, 0.4);
+}
+
+/* Приглушенное состояние (неактивная) */
+#btnAllNfts:not(.active) {
+    opacity: 0.7;
+}
+
+/* =========================================================
+   ПРАВАЯ НАДПИСЬ (МОЯ КОЛЛЕКЦИЯ) — СТИЛЬ GOLD BTC
+   ========================================================= */
+#btnMyCollection {
+    top: 16.5%;       
+    right: 11.3%;
+    color: #d9a03a;
+    text-shadow: none;
+}
+
+/* Активное состояние (когда "МОЯ КОЛЛЕКЦИЯ" выбрана) */
+#btnMyCollection.active {
+    color: #d4890a;
+    text-shadow: 
+        0 0 6px #f7931a, 
+        0 0 14px #f7931a, 
+        0 0 28px rgba(247, 147, 26, 0.7), 
+        0 0 42px rgba(247, 147, 26, 0.35);
+}
+
+/* Ховер на неактивную */
+#btnMyCollection:not(.active):hover {
+    opacity: 1;
+    transform: scale(1.04);
+    color: rgba(247, 147, 26, 0.7);
+    text-shadow: 0 0 8px rgba(247, 147, 26, 0.4);
+}
+
+/* Приглушенное состояние (неактивная) */
+#btnMyCollection:not(.active) {
+    opacity: 0.7;
+}

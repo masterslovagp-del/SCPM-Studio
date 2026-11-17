@@ -1,0 +1,786 @@
+﻿/*
+SCPM Studio
+Build 0023
+editor.css
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1b1b1b;
+    color: #ffffff;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+/*=========================================================
+  TOP BAR
+=========================================================*/
+#topbar {
+    height: 52px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #404040;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+}
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+.version {
+    color: #9b9b9b;
+    font-size: 13px;
+    margin-left: 8px;
+}
+.status {
+    color: #5cff76;
+    font-size: 14px;
+}
+/*=========================================================
+  TOOLBAR
+=========================================================*/
+.logo-group {
+    display: flex;
+    align-items: center;
+}
+#toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toolbar-separator {
+    width: 1px;
+    height: 24px;
+    background: #555;
+    margin: 0 4px;
+}
+.tool-btn {
+    background: #3d3d3d;
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: #fff;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+.tool-btn:hover {
+    background: #4d4d4d;
+    border-color: #777;
+}
+.tool-btn:active {
+    background: #555;
+}
+.tool-btn.active {
+    background: #4ea8ff;
+    border-color: #4ea8ff;
+    color: #1b1b1b;
+}
+/*=========================================================
+  WORKSPACE
+=========================================================*/
+#workspace {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+/*=========================================================
+  SCENE
+=========================================================*/
+#scene {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #202020;
+    overflow: auto;
+}
+#sceneContainer {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+#cassette {
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+    max-width: 100%;
+    max-height: 100%;
+}
+/*=========================================================
+  OBJECT LAYER
+=========================================================*/
+#objectLayer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: auto;
+}
+/*=========================================================
+  SCENE OBJECTS — BASE
+=========================================================*/
+.scene-object {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    pointer-events: auto;
+}
+/*=========================================================
+  COINS
+=========================================================*/
+.scene-object[data-type="coin"] {
+    width: 120px;
+    height: 120px;
+    border-radius: 50% !important;
+    overflow: hidden;
+    border: 2px dashed rgba(255, 255, 255, .25);
+    background-clip: padding-box;
+    transition:
+        border-color .15s,
+        box-shadow .15s,
+        background-color .15s,
+        filter .15s;
+}
+/* BTC glow — только круглое кольцо + мягкий ореол */
+.scene-object[data-id="btc"]:hover,
+.scene-object[data-id="btc"].glow {
+    border-color: rgba(247, 147, 26, 0.95);
+    border-style: solid;
+    background-color: rgba(247, 147, 26, 0.08);
+    box-shadow:
+        0 0 0 2px rgba(247, 147, 26, 0.55),
+        0 0 18px 4px rgba(247, 147, 26, 0.45),
+        0 0 40px 8px rgba(247, 147, 26, 0.22),
+        inset 0 0 20px rgba(247, 147, 26, 0.12);
+}
+/* ETH glow — только круглое кольцо + мягкий ореол */
+.scene-object[data-id="eth"]:hover,
+.scene-object[data-id="eth"].glow {
+    border-color: rgba(98, 126, 234, 0.95);
+    border-style: solid;
+    background-color: rgba(98, 126, 234, 0.08);
+    box-shadow:
+        0 0 0 2px rgba(98, 126, 234, 0.55),
+        0 0 18px 4px rgba(98, 126, 234, 0.45),
+        0 0 40px 8px rgba(98, 126, 234, 0.22),
+        inset 0 0 20px rgba(98, 126, 234, 0.12);
+}
+/* Coin sprite glow */
+.scene-object[data-id="btc"]:hover .coin-sprite,
+.scene-object[data-id="btc"].glow .coin-sprite {
+    filter:
+        drop-shadow(0 0 3px rgba(247, 147, 26, 0.9))
+        drop-shadow(0 0 6px rgba(247, 147, 26, 0.5));
+}
+.scene-object[data-id="eth"]:hover .coin-sprite,
+.scene-object[data-id="eth"].glow .coin-sprite {
+    filter:
+        drop-shadow(0 0 3px rgba(98, 126, 234, 0.9))
+        drop-shadow(0 0 6px rgba(98, 126, 234, 0.5));
+}
+/* Selected — круг для монет сохраняется */
+.scene-object.selected {
+    border: 2px solid #4ea8ff;
+    box-shadow: 0 0 12px rgba(78, 168, 255, .45);
+}
+.scene-object[data-type="coin"].selected {
+    border-radius: 50% !important;
+}
+.scene-object.selected:hover {
+    border-color: #4ea8ff;
+    box-shadow:
+        0 0 12px rgba(78, 168, 255, .45),
+        0 0 30px rgba(78, 168, 255, .25);
+}
+/* Coin sprite */
+.coin-sprite {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    user-select: none;
+    transition: filter .15s;
+}
+/*=========================================================
+  SELECTION HANDLES
+=========================================================*/
+.selection-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #4ea8ff;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    z-index: 100;
+    box-shadow:
+        0 0 6px rgba(78, 168, 255, 0.6),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, background 0.15s ease;
+}
+.selection-handle:hover {
+    transform: scale(1.35);
+    background: #ffffff;
+    border-color: #4ea8ff;
+}
+.selection-handle.top-left { top: -6px; left: -6px; cursor: nw-resize; }
+.selection-handle.top-right { top: -6px; right: -6px; cursor: ne-resize; }
+.selection-handle.bottom-left { bottom: -6px; left: -6px; cursor: sw-resize; }
+.selection-handle.bottom-right { bottom: -6px; right: -6px; cursor: se-resize; }
+/*=========================================================
+  ZONES — BUY BTC / BUY ETH
+=========================================================*/
+.scene-object[data-type="zone"] {
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s ease;
+}
+.zone-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Arial Narrow", "Helvetica Neue Condensed", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #dcd6c8;
+    opacity: .95;
+    pointer-events: none;
+    white-space: nowrap;
+    user-select: none;
+    line-height: 1;
+    transform: scaleX(1);
+    transform-origin: center center;
+    transition: color .25s ease, text-shadow .25s ease;
+}
+.zone-arrow {
+    color: #f7931a;
+    font-size: 13px;
+    transition: color .25s ease, text-shadow .25s ease;
+}
+/* ПРИНУДИТЕЛЬНО одинаковые метрики для ОБЕИХ надписей —
+   перебивает любые случайные переопределения */
+.scene-object[data-id="BUYBTCZONE"] .zone-label,
+.scene-object[data-id="BUYETHZONE"] .zone-label {
+    font-size: 16px !important;
+    letter-spacing: 2px !important;
+    transform: scaleX(1) !important;
+    font-weight: 700 !important;
+}
+.scene-object[data-id="BUYBTCZONE"] .zone-arrow,
+.scene-object[data-id="BUYETHZONE"] .zone-arrow {
+    font-size: 13px !important;
+}
+/* ---------- HOVER по зоне / LIT при ховере на монету: неон ---------- */
+.scene-object[data-id="BUYBTCZONE"]:hover .zone-label,
+.scene-object[data-id="BUYBTCZONE"].lit .zone-label,
+.scene-object[data-id="BUYETHZONE"]:hover .zone-label,
+.scene-object[data-id="BUYETHZONE"].lit .zone-label {
+    color: #00ff41;
+    opacity: 1;
+    text-shadow:
+        0 0 4px rgba(0, 255, 65, 1),
+        0 0 8px rgba(0, 255, 65, 0.9),
+        0 0 16px rgba(0, 255, 65, 0.7),
+        0 0 32px rgba(0, 255, 65, 0.4);
+}
+.scene-object[data-id="BUYBTCZONE"]:hover .zone-arrow,
+.scene-object[data-id="BUYBTCZONE"].lit .zone-arrow,
+.scene-object[data-id="BUYETHZONE"]:hover .zone-arrow,
+.scene-object[data-id="BUYETHZONE"].lit .zone-arrow {
+    color: #00ff41;
+    text-shadow:
+        0 0 4px rgba(0, 255, 65, 1),
+        0 0 8px rgba(0, 255, 65, 0.9),
+        0 0 16px rgba(0, 255, 65, 0.7),
+        0 0 32px rgba(0, 255, 65, 0.4);
+}
+/* Selected — зелёная пунктирная рамка */
+.scene-object[data-id="BUYBTCZONE"].selected,
+.scene-object[data-id="BUYETHZONE"].selected {
+    border: 1px dashed rgba(0, 255, 65, 0.35);
+}
+/* Приподнимаем только надпись BUY BTC */
+.scene-object[data-id="BUYBTCZONE"] .zone-label,
+.scene-object[data-id="BUYETHZONE"] .zone-label {
+    margin-top: -5px;  /* 👈 Чем больше число, тем выше поднимется. Попробуй -4px, -8px, -10px */
+}
+/*=========================================================
+  PROPERTIES
+=========================================================*/
+#properties {
+    width: 280px;
+    background: #2d2d2d;
+    border-left: 1px solid #404040;
+    padding: 20px;
+}
+#properties h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+.property {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #444;
+}
+.property span {
+    color: #c5c5c5;
+}
+.property strong {
+    color: white;
+}
+.prop-input {
+    width: 80px;
+    background: #3d3d3d;
+    border: 1px solid #555;
+    border-radius: 3px;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 13px;
+    text-align: right;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+.prop-input:focus {
+    outline: none;
+    border-color: #4ea8ff;
+}
+.prop-input:disabled {
+    background: #333;
+    color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+/*=========================================================
+  STATUS BAR
+=========================================================*/
+#statusbar {
+    height: 28px;
+    background: #2d2d2d;
+    border-top: 1px solid #404040;
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    color: #bdbdbd;
+    font-size: 13px;
+}
+/*=========================================================
+  CASSETTE DISPLAY
+=========================================================*/
+#cassetteDisplay {
+    position: absolute;
+    left: 50%;
+    top: 46.4%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.display-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Убрали animation: displayFadeIn; отсюда */
+}
+
+.display-coin {
+    display: none;
+}
+
+.display-amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #00ff41;
+    text-shadow:
+        0 0 10px rgba(0, 255, 65, 0.8),
+        0 0 20px rgba(0, 255, 65, 0.4);
+    font-variant-numeric: tabular-nums;
+    font-family: "Courier New", monospace;
+    white-space: nowrap;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.display-amount.buy-hint {
+    font-size: 24px;
+    letter-spacing: 3px;
+}
+
+.display-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    /* Убрали animation: displayFadeIn; отсюда */
+}
+
+.display-hint span {
+    font-size: 9px;
+    font-weight: 700;
+    color: #c9a227;
+    letter-spacing: 1px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    text-shadow: 0 0 10px rgba(201, 162, 39, 0.4);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.display-hint span:nth-child(2) {
+    margin-bottom: 1px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* НОВАЯ АНИМАЦИЯ: только прозрачность, без искажения transform */
+@keyframes displayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Применяем анимацию к элементам, когда они отображаются */
+.display-price:not(.hidden),
+.display-hint:not(.hidden) {
+    animation: displayFadeIn 0.15s ease-out;
+}
+/*=========================================================
+  CASSETTE QUOTES
+=========================================================*/
+#cassetteQuotes {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+    user-select: none;
+}
+.quote-label-btc {
+    position: absolute;
+    left: 45.8%;
+    top: 51.1%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+    font-family: "Segoe UI", sans-serif;
+    transition: color .15s, text-shadow .15s;
+}
+.quote-label-eth {
+    position: absolute;
+    right: 45.1%;
+    top: 51.1%;
+    transform: translate(50%, -50%);
+    font-size: 8px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+    font-family: "Segoe UI", sans-serif;
+    transition: color .15s, text-shadow .15s;
+}
+.quote-label-btc.lit {
+    color: rgba(247, 147, 26, .95);
+    text-shadow: 0 0 8px rgba(247, 147, 26, .6);
+}
+.quote-label-eth.lit {
+    color: rgba(98, 126, 234, .95);
+    text-shadow: 0 0 8px rgba(98, 126, 234, .6);
+}
+.quote-btc-box {
+    position: absolute;
+    left: 41%;
+    top: 54.4%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.quote-eth-box {
+    position: absolute;
+    right: 40.5%;
+    top: 54.4%;
+    transform: translate(50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.quote-value {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-family: "Courier New", monospace;
+}
+#quoteBtc {
+    color: #f7931a;
+    text-shadow: 0 0 8px rgba(247, 147, 26, 0.35);
+}
+#quoteEth {
+    color: #627eea;
+    text-shadow: 0 0 8px rgba(98, 126, 234, 0.35);
+}
+.quote-trend {
+    font-size: 10px;
+    font-weight: 700;
+}
+.quote-trend.up {
+    color: #5cff76;
+}
+.quote-trend.down {
+    color: #ff5c5c;
+}
+.quote-trend.neutral {
+    color: #9b9b9b;
+}
+.quote-divider {
+    position: absolute;
+    left: 50%;
+    top: 53.8%;
+    transform: translate(-50%, -50%);
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 16px;
+    font-weight: 100;
+}
+/*=========================================================
+  SHOP TEST MODE
+=========================================================*/
+.play-mode .scene-object[data-type="coin"] {
+    border-color: transparent;
+    cursor: default;
+}
+.play-mode .scene-object[data-type="zone"] {
+    cursor: pointer;
+}
+.play-mode .selection-handle {
+    display: none;
+}
+/*=========================================================
+  NFT SHOP (DEMO)
+=========================================================*/
+.shop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.shop-overlay.open {
+    display: flex;
+}
+.shop-card {
+    position: relative;
+    width: 340px;
+    background: #141414;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: #ffb000;
+    font-family: "Courier New", monospace;
+    box-shadow: 0 0 40px rgba(255, 176, 0, .15);
+}
+.shop-badge {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #5cff76;
+    border: 1px solid #5cff76;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
+.shop-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 16px;
+    cursor: pointer;
+}
+.shop-close:hover {
+    color: #fff;
+}
+.shop-coin {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px #000);
+}
+.shop-title {
+    margin: 8px 0 2px;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+.shop-meta {
+    margin: 0 0 10px;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 1px;
+}
+.shop-price {
+    font-size: 16px;
+    color: #fff;
+}
+.shop-owned {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #c9a227;
+}
+.shop-status {
+    min-height: 22px;
+    margin: 10px 0;
+    font-size: 12px;
+}
+.shop-status.ok {
+    color: #5cff76;
+}
+.shop-status.err {
+    color: #ff5c5c;
+}
+.shop-btn {
+    background: #222;
+    border: 1px solid #ffb000;
+    color: #ffb000;
+    padding: 8px 18px;
+    font-family: inherit;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+.shop-btn:hover:not(:disabled) {
+    background: #ffb000;
+    color: #141414;
+}
+.shop-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+/*=========================================================
+  SIDE B — TOOLBAR TABS
+=========================================================*/
+.tool-btn.tab-btc.active {
+    background: rgba(247, 147, 26, 0.2);
+    border-color: #f7931a;
+    color: #f7931a;
+}
+.tool-btn.tab-eth.active {
+    background: rgba(98, 126, 234, 0.2);
+    border-color: #627eea;
+    color: #627eea;
+}
+/*=========================================================
+  SIDE LETTER FLIP — A SIDE / B SIDE
+  По умолчанию — приглушённый «печатный» розовый,
+  при ховере — розовый неон в тон NEW
+=========================================================*/
+.side-letter-flip {
+    position: absolute;
+    left: 17%;
+    top: 12%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+    width: 63px;
+    height: 63px;
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+}
+/* Буква A/B — спокойный розовый, как приглушённая печать */
+.side-glow-letter {
+    position: absolute;
+    left: 17%;
+    top: 12%;
+    z-index: 31;
+    pointer-events: none;
+    font-family: "Arial Black", "Segoe UI", Arial, sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: 0;
+    color: #b23a63;      /* ← приглушённый розовый (НЕ малиновый неон) */
+    opacity: .85;
+    transition: color .2s ease, text-shadow .2s ease, opacity .2s ease;
+    line-height: 1;
+    white-space: nowrap;
+}
+/* Слово SIDE — тот же спокойный тон */
+.side-glow-side {
+    position: absolute;
+    left: 16.8%;
+    top: 16%;
+    z-index: 31;
+    pointer-events: none;
+    font-family: "Arial Black", "Segoe UI", Arial, sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: #b23a63;
+    opacity: .85;
+    transition: color .2s ease, text-shadow .2s ease, opacity .2s ease;
+    line-height: 1;
+    white-space: nowrap;
+}
+/* B SIDE — те же координаты, что у настроенной A */
+.side-glow-letter.side-b-letter { left: 17%; top: 12%; }
+.side-glow-side.side-b-side     { left: 17%; top: 12%; }
+/* Ховер — розовый неон в тон NEW */
+.side-letter-flip:hover ~ .side-glow-letter,
+.side-letter-flip:hover .side-glow-letter {
+    color: #e91e63;
+    opacity: 1;
+    text-shadow:
+        0 0 5px rgba(233, 30, 99, 0.60),
+        0 0 12px rgba(233, 30, 99, 0.35),
+        0 0 22px rgba(233, 30, 99, 0.18);
+}
+.side-letter-flip:hover ~ .side-glow-side,
+.side-letter-flip:hover .side-glow-side {
+    color: #e91e63;
+    opacity: 1;
+    text-shadow:
+        0 0 4px rgba(233, 30, 99, 0.55),
+        0 0 10px rgba(233, 30, 99, 0.30);
+}
+/* Стрелки в тот же розовый */
+.side-letter-flip:hover {
+    transform: translate(-50%, -50%) scale(1.04);
+}
+.side-letter-flip:active {
+    transform: translate(-50%, -50%) scale(0.96);
+}
