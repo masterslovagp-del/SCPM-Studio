@@ -984,6 +984,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!errEth && elEth) elEth.textContent = (ethCount || 0).toLocaleString('ru-RU');
     } catch (e) { console.warn('[Index] Stats load error:', e); }
 });
+<script>
+// Фиксация идеальных координат по умолчанию
+(function() {
+    // Проверяем, есть ли сохранения. Если нет - ставим наши.
+    if (!localStorage.getItem('scpm_autosave')) {
+        var defaultScene = {
+            "version": "0.5.0",
+            "savedAt": new Date().toISOString(),
+            "objects": [
+                {
+                    "id": "btc", "type": "btc", "sprite": "assets/sprites/btc.png",
+                    "x": 446, "y": 243, "width": 118, "height": 118, "scale": 1.85,
+                    "rotation": 186.15199999998322, "flipX": false, "flipY": false,
+                    "opacity": 1, "locked": false, "visible": true
+                },
+                {
+                    "id": "eth", "type": "eth", "sprite": "assets/sprites/eth.png",
+                    "x": 921, "y": 244, "width": 118, "height": 118, "scale": 1.8,
+                    "rotation": 186.15199999998322, "flipX": false, "flipY": false,
+                    "opacity": 1, "locked": false, "visible": true
+                },
+                {
+                    "id": "BUYBTCZONE", "type": "zone", "sprite": "",
+                    "x": 442, "y": 347, "width": 150, "height": 34, "scale": 1,
+                    "rotation": 0, "flipX": false, "flipY": false,
+                    "opacity": 1, "locked": false, "visible": true
+                },
+                {
+                    "id": "BUYETHZONE", "type": "zone", "sprite": "",
+                    "x": 927, "y": 347, "width": 150, "height": 34, "scale": 1,
+                    "rotation": 0, "flipX": false, "flipY": false,
+                    "opacity": 1, "locked": false, "visible": true
+                }
+            ]
+        };
+        localStorage.setItem('scpm_autosave', JSON.stringify(defaultScene));
+    }
+})();
 </script>
 
 </body>
