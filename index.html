@@ -795,43 +795,32 @@
 
 <script>
 /* ============================================================
-   ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ (публичный ↔ редактирование)
+   ПРИНУДИТЕЛЬНЫЙ РЕЖИМ ПРОСМОТРА (без редактирования)
    ============================================================ */
 (function () {
+    // 1. Убираем кнопку редактирования
     var toggleBtn = document.getElementById('toggleEditBtn');
-    if (!toggleBtn) return;
+    if (toggleBtn) toggleBtn.style.display = 'none';
 
-    function setEditMode(on) {
-        document.body.classList.toggle('edit-mode', on);
-        if (window.app && typeof app.setPlayMode === 'function') {
-            app.setPlayMode(!on);
-        }
-        if (on) {
-            toggleBtn.textContent = '✓ ГОТОВО';
-            toggleBtn.title = 'Выйти из режима редактирования';
-        } else {
-            toggleBtn.textContent = '✎ РЕДАКТИРОВАТЬ';
-            toggleBtn.title = 'Режим редактирования (перемещение монет)';
-        }
-        if (window.renderer) renderer.render();
-    }
-
-    toggleBtn.addEventListener('click', function () {
-        var currentMode = document.body.classList.contains('edit-mode');
-        setEditMode(!currentMode);
-        if (currentMode === true && window.storage) {
-            storage.save();
-            console.log('[SCPM] Positions saved to localStorage');
-        }
-    });
-
+    // 2. Ждем загрузки приложения и жестко включаем режим "Play"
     var checkApp = setInterval(function () {
         if (window.app && typeof app.setPlayMode === 'function') {
-            app.setPlayMode(true);
+            app.setPlayMode(true); 
+            
+            // Принудительно убираем класс редактирования с body (если он появился)
+            document.body.classList.remove('edit-mode');
+            document.body.classList.add('play-mode');
+
+            // Прячем синие точки навсегда
+            var style = document.createElement('style');
+            style.innerHTML = '.selection-handle { display: none !important; } #properties { display: none !important; }';
+            document.head.appendChild(style);
+            
             clearInterval(checkApp);
         }
     }, 100);
 })();
+</script>
 
 /* ============================================================
    НИКНЕЙМ НАД ВХОДОМ (подпись + значение)
