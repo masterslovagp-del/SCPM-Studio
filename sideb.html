@@ -157,12 +157,11 @@
         background: #202020 !important;
     }
 
-    #sceneContainer {
+ body:not(.admin-mode) #sceneContainer {
         position: relative !important;
-        display: block !important;
+        display: inline-block !important;
         max-width: 100vw !important;
         max-height: 100vh !important;
-        /* Жесткие width и height мы убрали */
     }
 
     #cassette {
@@ -1167,42 +1166,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(updateScrollbar, 250);
     setTimeout(updateScrollbar, 800);
 })();
-<script>
-/* ============================================================
-   АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА (Laptop, Mobile, Tablet)
-   ============================================================ */
-(function() {
-    function fitContainer() {
-        var container = document.getElementById('sceneContainer');
-        var img = document.getElementById('cassette');
-        if (!container || !img) return;
-        
-        var winW = window.innerWidth;
-        var winH = window.innerHeight;
-        
-        if (!img.naturalWidth || !img.naturalHeight) {
-            img.onload = fitContainer;
-            return;
-        }
-
-        var imgRatio = img.naturalWidth / img.naturalHeight;
-        var winRatio = winW / winH;
-
-        if (winRatio > imgRatio) {
-            container.style.setProperty('width', (winH * imgRatio) + 'px', 'important');
-            container.style.setProperty('height', winH + 'px', 'important');
-        } else {
-            container.style.setProperty('width', winW + 'px', 'important');
-            container.style.setProperty('height', (winW / imgRatio) + 'px', 'important');
-        }
-    }
-
-    window.addEventListener('resize', fitContainer);
-    window.addEventListener('load', fitContainer);
-    document.addEventListener('DOMContentLoaded', fitContainer);
-    setTimeout(fitContainer, 200);
-    setTimeout(fitContainer, 1000);
-})();
 </script>
+
 </body>
 </html>

@@ -38,11 +38,11 @@
         background: #202020 !important;
     }
     
-    body:not(.admin-mode) #sceneContainer {
+   body:not(.admin-mode) #sceneContainer {
         position: relative !important;
+        display: inline-block !important;
         max-width: 100vw !important;
         max-height: 100vh !important;
-        /* Мы убрали отсюда width: 100% и height: 100% */
     }
 
     body:not(.admin-mode) #cassette {
@@ -792,28 +792,27 @@
 <script src="js/app.js"></script>
 
 <script>
-/* ============================================================
-   1. ПРИНУДИТЕЛЬНЫЙ РЕЖИМ ПРОСМОТРА
-   ============================================================ */
+/* Включаем режим кликов и прячем кнопку редактирования */
 (function () {
-    var toggleBtn = document.getElementById('toggleEditBtn');
-    if (toggleBtn) toggleBtn.style.display = 'none';
     var checkApp = setInterval(function () {
         if (window.app && typeof app.setPlayMode === 'function') {
             app.setPlayMode(true);
             document.body.classList.remove('edit-mode');
             document.body.classList.add('play-mode');
+            
+            var toggleBtn = document.getElementById('toggleEditBtn');
+            if (toggleBtn) toggleBtn.style.display = 'none';
+            
             var style = document.createElement('style');
             style.innerHTML = '.selection-handle { display: none !important; } #properties { display: none !important; }';
             document.head.appendChild(style);
+            
             clearInterval(checkApp);
         }
     }, 100);
 })();
 
-/* ============================================================
-   2. НИКНЕЙМ НАД ВХОДОМ
-   ============================================================ */
+/* Никнейм, мотто и статистика (без изменений) */
 (function () {
     var nicknameEl = null, labelEl = null, nickValueEl = null;
     function cacheElements() {
@@ -830,14 +829,8 @@
         try {
             const { data: profile } = await window.scpmSupabase.from('profiles').select('nickname').eq('id', session.user.id).maybeSingle();
             var nickname = profile && profile.nickname ? profile.nickname.trim() : '';
-            var displayName = '';
-            var labelText = 'NICKNAME:';
-            if (nickname) {
-                displayName = nickname.toUpperCase();
-            } else if (session.user.email) {
-                displayName = session.user.email.split('@')[0].toUpperCase();
-                labelText = 'EMAIL:';
-            }
+            var displayName = nickname ? nickname.toUpperCase() : (session.user.email ? session.user.email.split('@')[0].toUpperCase() : '');
+            var labelText = nickname ? 'NICKNAME:' : 'EMAIL:';
             if (displayName && nickValueEl) {
                 if (labelEl) labelEl.textContent = labelText;
                 nickValueEl.textContent = displayName;
@@ -845,14 +838,14 @@
             } else {
                 nicknameEl.style.display = 'none';
             }
-        } catch (e) { console.warn('[SCPM Index] Failed to load nickname:', e); }
+        } catch (e) { console.warn(e); }
     }
     function boot() {
         if (!window.scpmSupabase) return;
         cacheElements();
         if (!nicknameEl) return;
         window.scpmSupabase.auth.onAuthStateChange(function (event, session) {
-            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') renderNICKNAME(session);
+            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') renderNICKNAME(session);
             if (event === 'SIGNED_OUT') nicknameEl.style.display = 'none';
         });
     }
@@ -860,9 +853,6 @@
     else boot();
 })();
 
-/* ============================================================
-   3. MOTTO HOVER LINK
-   ============================================================ */
 (function () {
     function initMottoHover() {
         const container = document.getElementById('sceneContainer');
@@ -907,7 +897,7 @@
             raf = 0;
             if (overMottoOrNew(lastX, lastY)) { setLit(false); return; }
             const target = document.elementFromPoint(lastX, lastY);
-            const overBuyDom = !!(target && target.closest && target.closest('.scene-object[data-id="BUYBTCZONE"], .scene-object[data-id="BUYETHZONE"], .buy-btn, .buy-zone, [id*="buyBtc"], [id*="buyEth"]'));
+            const overBuyDom = !!(target && target.closest && target.closest('.scene-object[data-id="BUYBTCZONE"], .scene-object[data-id="BUYETHZONE"], .buy-btn, .buy-zone'));
             const lit = overBuyDom || overCoin(lastX, lastY) || overBuyZoneElement(lastX, lastY);
             setLit(lit);
         }
@@ -919,82 +909,35 @@
             if (raf) { cancelAnimationFrame(raf); raf = 0; }
             setLit(false);
         });
-        window.addEventListener('resize', function () { setLit(false); });
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMottoHover);
     else initMottoHover();
 })();
 
-/* ============================================================
-   4. СТАТИСТИКА ИЗ SUPABASE
-   ============================================================ */
 document.addEventListener('DOMContentLoaded', async () => {
     if (!window.scpmSupabase) return;
     try {
-        const { count: btcCount, error: errBtc } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'BTC');
-        const { count: ethCount, error: errEth } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'ETH');
-        const elBtc = document.getElementById('statBtc');
-        const elEth = document.getElementById('statEth');
-        if (!errBtc && elBtc) elBtc.textContent = (btcCount || 0).toLocaleString('ru-RU');
-        if (!errEth && elEth) elEth.textContent = (ethCount || 0).toLocaleString('ru-RU');
-    } catch (e) { console.warn('[Index] Stats load error:', e); }
+        const { count: btcCount } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'BTC');
+        const { count: ethCount } = await window.scpmSupabase.from('nfts').select('*', { count: 'exact', head: true }).eq('coin', 'ETH');
+        if (document.getElementById('statBtc')) document.getElementById('statBtc').textContent = (btcCount || 0).toLocaleString('ru-RU');
+        if (document.getElementById('statEth')) document.getElementById('statEth').textContent = (ethCount || 0).toLocaleString('ru-RU');
+    } catch (e) {}
 });
 
-/* ============================================================
-   5. ФИКСАЦИЯ КООРДИНАТ
-   ============================================================ */
+/* Записываем твои ИДЕАЛЬНЫЕ координаты (те, что ты присылал ранее) */
 (function() {
-    if (!localStorage.getItem('scpm_autosave')) {
-        var defaultScene = {
-            "version": "0.5.0",
-            "savedAt": new Date().toISOString(),
-            "objects": [
-                { "id": "btc", "type": "btc", "sprite": "assets/sprites/btc.png", "x": 446, "y": 243, "width": 118, "height": 118, "scale": 1.85, "rotation": 186.15199999998322, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
-                { "id": "eth", "type": "eth", "sprite": "assets/sprites/eth.png", "x": 921, "y": 244, "width": 118, "height": 118, "scale": 1.8, "rotation": 186.15199999998322, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
-                { "id": "BUYBTCZONE", "type": "zone", "sprite": "", "x": 442, "y": 347, "width": 150, "height": 34, "scale": 1, "rotation": 0, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
-                { "id": "BUYETHZONE", "type": "zone", "sprite": "", "x": 927, "y": 347, "width": 150, "height": 34, "scale": 1, "rotation": 0, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true }
-            ]
-        };
-        localStorage.setItem('scpm_autosave', JSON.stringify(defaultScene));
-    }
-})();
-
-/* ============================================================
-   6. АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА (Laptop, Mobile, Tablet)
-   ============================================================ */
-(function() {
-    function fitContainer() {
-        var container = document.getElementById('sceneContainer');
-        var img = document.getElementById('cassette');
-        if (!container || !img) return;
-        
-        var winW = window.innerWidth;
-        var winH = window.innerHeight;
-        
-        if (!img.naturalWidth || !img.naturalHeight) {
-            img.onload = fitContainer;
-            return;
-        }
-
-        var imgRatio = img.naturalWidth / img.naturalHeight;
-        var winRatio = winW / winH;
-
-        if (winRatio > imgRatio) {
-            container.style.setProperty('width', (winH * imgRatio) + 'px', 'important');
-            container.style.setProperty('height', winH + 'px', 'important');
-        } else {
-            container.style.setProperty('width', winW + 'px', 'important');
-            container.style.setProperty('height', (winW / imgRatio) + 'px', 'important');
-        }
-    }
-
-    window.addEventListener('resize', fitContainer);
-    window.addEventListener('load', fitContainer);
-    document.addEventListener('DOMContentLoaded', fitContainer);
-    setTimeout(fitContainer, 200);
-    setTimeout(fitContainer, 1000);
+    var defaultScene = {
+        "version": "0.5.0",
+        "savedAt": new Date().toISOString(),
+        "objects": [
+            { "id": "btc", "type": "btc", "sprite": "assets/sprites/btc.png", "x": 446, "y": 243, "width": 118, "height": 118, "scale": 1.85, "rotation": 186.15, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
+            { "id": "eth", "type": "eth", "sprite": "assets/sprites/eth.png", "x": 921, "y": 244, "width": 118, "height": 118, "scale": 1.8, "rotation": 186.15, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
+            { "id": "BUYBTCZONE", "type": "zone", "sprite": "", "x": 442, "y": 347, "width": 150, "height": 34, "scale": 1, "rotation": 0, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true },
+            { "id": "BUYETHZONE", "type": "zone", "sprite": "", "x": 927, "y": 347, "width": 150, "height": 34, "scale": 1, "rotation": 0, "flipX": false, "flipY": false, "opacity": 1, "locked": false, "visible": true }
+        ]
+    };
+    localStorage.setItem('scpm_autosave', JSON.stringify(defaultScene));
 })();
 </script>
-
 </body>
 </html>
