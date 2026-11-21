@@ -184,14 +184,14 @@
     --b-new-top: 11.4%;
     --b-new-width: 8.55%;
     --b-new-height: 3.9%;
-    --b-new-font: clamp(22.5px, 1.40vw, 30px);
+    --b-new-font: 22.5px;
 
     /* Слоган */
     --b-motto-left: 6.2%;
     --b-motto-top: 56.55%;
     --b-motto-width: 87.6%;
     --b-motto-height: 6.2%;
-    --b-motto-font: clamp(13px, 1.48vw, 24px);
+    --b-motto-font: 22.73px;
 
     /* Видимая область прокрутки NFT */
     --b-scroll-top: 16.8%;
@@ -208,7 +208,7 @@
     --b-tabs-top: 14%;
     --b-btc-left: 22.8%;
     --b-eth-right: 19.7%;
-    --b-tabs-font: clamp(9px, 1.35vw, 14px);
+    --b-tabs-font: 14px;
 
     /* ВСЕ NFT */
     --b-all-left: 22.9%;
@@ -394,6 +394,42 @@
 .side-glow-letter.side-b-letter,
 .side-glow-side.side-b-side {
     pointer-events: none !important;
+}
+</style>
+
+<style id="sideb-native-cassette-canvas-0103">
+/* Фиксированная логическая плоскость совпадает с исходным размером cassette-b.png.
+   Вся кассета, коллекция, тексты и скроллбар масштабируются одним коэффициентом. */
+#workspace {
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+#scene {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+#sceneContainer {
+    position: absolute !important;
+    display: block !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform-origin: center center !important;
+    opacity: 0;
+}
+#cassette {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: fill !important;
+    display: block !important;
 }
 </style>
 
@@ -1165,6 +1201,49 @@ window.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(updateScrollbar);
     setTimeout(updateScrollbar, 250);
     setTimeout(updateScrollbar, 800);
+})();
+</script>
+
+
+<script id="sideb-native-cassette-scaler-0103">
+(function () {
+    const container = document.getElementById('sceneContainer');
+    const img = document.getElementById('cassette');
+    if (!container || !img) return;
+
+    function fitCassetteCanvas() {
+        if (!img.naturalWidth || !img.naturalHeight) return;
+
+        const nativeW = img.naturalWidth;
+        const nativeH = img.naturalHeight;
+        container.style.width = nativeW + 'px';
+        container.style.height = nativeH + 'px';
+
+        const scale = Math.min(
+            window.innerWidth / nativeW,
+            window.innerHeight / nativeH
+        );
+        if (!Number.isFinite(scale) || scale <= 0) return;
+
+        container.style.transform =
+            'translate(-50%, -50%) scale(' + scale + ')';
+        container.style.opacity = '1';
+    }
+
+    if (img.complete && img.naturalWidth) {
+        requestAnimationFrame(fitCassetteCanvas);
+    } else {
+        img.addEventListener('load', fitCassetteCanvas, { once: true });
+    }
+
+    window.addEventListener('resize', fitCassetteCanvas, { passive: true });
+    window.addEventListener('orientationchange', fitCassetteCanvas, { passive: true });
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', fitCassetteCanvas, { passive: true });
+    }
+
+    setTimeout(fitCassetteCanvas, 100);
+    setTimeout(fitCassetteCanvas, 500);
 })();
 </script>
 
