@@ -359,169 +359,43 @@
     </style>
 
     <style id="manual-text-controls-side-a">
-/* SIDE A — значения эталонного локального файла.
-   Логическая плоскость кассеты: 1536 × 1024 px.
-   Фиксированные размеры шрифтов масштабируются вместе с кассетой. */
-:root {
-    /* GOLD BTC */
-    --a-btc-left: 26%;
-    --a-btc-top: 16%;
-    --a-btc-font: 37px;
+    :root {
+        /* Теперь здесь жесткие пиксели, чтобы масштабировалось 1 к 1 с картинкой */
+        --a-btc-left: 26%; --a-btc-top: 16%; --a-btc-font: 40px;
+        --a-eth-right: 26%; --a-eth-top: 16%; --a-eth-font: 40px;
+        --a-new-left: 56.5%; --a-new-top: 11.4%; --a-new-width: 8.55%; --a-new-height: 3.9%; --a-new-font: 32px;
+        --a-motto-left: 6.2%; --a-motto-top: 56.4%; --a-motto-width: 87.6%; --a-motto-height: 6.2%; --a-motto-font: 24px;
+        --a-letter-left: 21%; --a-letter-top: 11.7%; --a-letter-font: 40px;
+        --a-side-left: 20.9%; --a-side-top: 16%; --a-side-font: 14px;
+        --a-audio-left: 50%; --a-audio-top: 36%;
+        --a-display-left: 50%; --a-display-top: 46.4%; --a-display-width: 280px; --a-display-height: 100px;
+        --a-nickname-left: 50%; --a-nickname-top: 3%; --a-nickname-width: 85%;
+        --a-login-left: 50%; --a-login-top: -45%;
+        --a-stats-left: 50%; --a-stats-top: -108.5%;
+        --a-hint-bottom: 30px;
+        --a-btc-quote-left: 42.6%; --a-btc-quote-top: 54.4%; --a-btc-label-left: 45.2%; --a-btc-label-top: 51.1%;
+        --a-eth-quote-right: 42%; --a-eth-quote-top: 54.4%; --a-eth-label-right: 45%; --a-eth-label-top: 51.1%;
+        --a-divider-left: 50%; --a-divider-top: 53.9%;
+    }
 
-    /* SILVER ETH */
-    --a-eth-right: 26%;
-    --a-eth-top: 16%;
-    --a-eth-font: 37px;
-
-    /* NEW */
-    --a-new-left: 56.5%;
-    --a-new-top: 11.4%;
-    --a-new-width: 8.55%;
-    --a-new-height: 3.9%;
-    --a-new-font: 24px;
-
-    /* Слоган */
-    --a-motto-left: 6.2%;
-    --a-motto-top: 56.4%;
-    --a-motto-width: 87.6%;
-    --a-motto-height: 6.2%;
-    --a-motto-font: 22.73px;
-
-    /* Буква A */
-    --a-letter-left: 21%;
-    --a-letter-top: 11.7%;
-    --a-letter-font: 30px;
-
-    /* Надпись SIDE */
-    --a-side-left: 20.9%;
-    --a-side-top: 16%;
-    --a-side-font: 10px;
-
-    /* Музыкальный плеер */
-    --a-audio-left: 50%;
-    --a-audio-top: 36%;
-
-    /* Центральный дисплей */
-    --a-display-left: 50%;
-    --a-display-top: 46.4%;
-    --a-display-width: 220px;
-    --a-display-height: 80px;
-
-    /* NICKNAME */
-    --a-nickname-left: 50%;
-    --a-nickname-top: 3%;
-    --a-nickname-width: 85%;
-
-    /* LOGIN / ACCOUNT */
-    --a-login-left: 50%;
-    --a-login-top: -45%;
-
-    /* NFT MINT */
-    --a-stats-left: 50%;
-    --a-stats-top: -108.5%;
-
-    /* Подсказка на дисплее */
-    --a-hint-bottom: 30px;
-
-    /* Котировки BTC */
-    --a-btc-quote-left: 42.6%;
-    --a-btc-quote-top: 54.4%;
-    --a-btc-label-left: 45.2%;
-    --a-btc-label-top: 51.1%;
-
-    /* Котировки ETH */
-    --a-eth-quote-right: 42%;
-    --a-eth-quote-top: 54.4%;
-    --a-eth-label-right: 45%;
-    --a-eth-label-top: 51.1%;
-
-    /* Разделитель котировок */
-    --a-divider-left: 50%;
-    --a-divider-top: 53.9%;
-}
-
-#goldBtcLabel {
-    left: var(--a-btc-left) !important;
-    top: var(--a-btc-top) !important;
-    font-size: var(--a-btc-font) !important;
-}
-#silverEthLabel {
-    right: var(--a-eth-right) !important;
-    top: var(--a-eth-top) !important;
-    font-size: var(--a-eth-font) !important;
-}
-#cassetteNew {
-    left: var(--a-new-left) !important;
-    top: var(--a-new-top) !important;
-    width: var(--a-new-width) !important;
-    height: var(--a-new-height) !important;
-    font-size: var(--a-new-font) !important;
-}
-#cassetteMotto {
-    left: var(--a-motto-left) !important;
-    top: var(--a-motto-top) !important;
-    width: var(--a-motto-width) !important;
-    height: var(--a-motto-height) !important;
-    font-size: var(--a-motto-font) !important;
-}
-.side-glow-letter.side-a-letter {
-    left: var(--a-letter-left) !important;
-    top: var(--a-letter-top) !important;
-    font-size: var(--a-letter-font) !important;
-}
-.side-glow-side.side-a-side {
-    left: var(--a-side-left) !important;
-    top: var(--a-side-top) !important;
-    font-size: var(--a-side-font) !important;
-}
-#cassetteAudioPlayer {
-    left: var(--a-audio-left) !important;
-    top: var(--a-audio-top) !important;
-}
-#cassetteDisplay {
-    left: var(--a-display-left) !important;
-    top: var(--a-display-top) !important;
-    width: var(--a-display-width) !important;
-    height: var(--a-display-height) !important;
-}
-#lcdUserNICKNAME {
-    left: var(--a-nickname-left) !important;
-    top: var(--a-nickname-top) !important;
-    width: var(--a-nickname-width) !important;
-}
-#lcdAccountBtn {
-    left: var(--a-login-left) !important;
-    top: var(--a-login-top) !important;
-}
-#lcdStats {
-    left: var(--a-stats-left) !important;
-    top: var(--a-stats-top) !important;
-}
-#cassetteDisplay .display-hint,
-#cassetteDisplay .display-price {
-    bottom: var(--a-hint-bottom) !important;
-}
-.quote-label-btc {
-    left: var(--a-btc-label-left) !important;
-    top: var(--a-btc-label-top) !important;
-}
-.quote-btc-box {
-    left: var(--a-btc-quote-left) !important;
-    top: var(--a-btc-quote-top) !important;
-}
-.quote-label-eth {
-    right: var(--a-eth-label-right) !important;
-    top: var(--a-eth-label-top) !important;
-}
-.quote-eth-box {
-    right: var(--a-eth-quote-right) !important;
-    top: var(--a-eth-quote-top) !important;
-}
-.quote-divider {
-    left: var(--a-divider-left) !important;
-    top: var(--a-divider-top) !important;
-}
-</style>	
+    #goldBtcLabel { left: var(--a-btc-left) !important; top: var(--a-btc-top) !important; font-size: var(--a-btc-font) !important; }
+    #silverEthLabel { right: var(--a-eth-right) !important; top: var(--a-eth-top) !important; font-size: var(--a-eth-font) !important; }
+    #cassetteNew { left: var(--a-new-left) !important; top: var(--a-new-top) !important; width: var(--a-new-width) !important; height: var(--a-new-height) !important; font-size: var(--a-new-font) !important; }
+    #cassetteMotto { left: var(--a-motto-left) !important; top: var(--a-motto-top) !important; width: var(--a-motto-width) !important; height: var(--a-motto-height) !important; font-size: var(--a-motto-font) !important; }
+    .side-glow-letter.side-a-letter { left: var(--a-letter-left) !important; top: var(--a-letter-top) !important; font-size: var(--a-letter-font) !important; }
+    .side-glow-side.side-a-side { left: var(--a-side-left) !important; top: var(--a-side-top) !important; font-size: var(--a-side-font) !important; }
+    #cassetteAudioPlayer { left: var(--a-audio-left) !important; top: var(--a-audio-top) !important; }
+    #cassetteDisplay { left: var(--a-display-left) !important; top: var(--a-display-top) !important; width: var(--a-display-width) !important; height: var(--a-display-height) !important; }
+    #lcdUserNICKNAME { left: var(--a-nickname-left) !important; top: var(--a-nickname-top) !important; width: var(--a-nickname-width) !important; }
+    #lcdAccountBtn { left: var(--a-login-left) !important; top: var(--a-login-top) !important; }
+    #lcdStats { left: var(--a-stats-left) !important; top: var(--a-stats-top) !important; }
+    #cassetteDisplay .display-hint, #cassetteDisplay .display-price { bottom: var(--a-hint-bottom) !important; }
+    .quote-label-btc { left: var(--a-btc-label-left) !important; top: var(--a-btc-label-top) !important; }
+    .quote-btc-box { left: var(--a-btc-quote-left) !important; top: var(--a-btc-quote-top) !important; }
+    .quote-label-eth { right: var(--a-eth-label-right) !important; top: var(--a-eth-label-top) !important; }
+    .quote-eth-box { right: var(--a-eth-quote-right) !important; top: var(--a-eth-quote-top) !important; }
+    .quote-divider { left: var(--a-divider-left) !important; top: var(--a-divider-top) !important; }
+    </style>	
 
     <style id="side-a-flip-hit-area-only">
     #sceneContainer > a.side-letter-flip[href="sideb.html"] {
@@ -742,11 +616,7 @@
         container.style.opacity = '1';
     }
 
-    window.addEventListener('resize', fixCanvasSize, { passive: true });
-    window.addEventListener('orientationchange', fixCanvasSize, { passive: true });
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', fixCanvasSize, { passive: true });
-    }
+    window.addEventListener('resize', fixCanvasSize);
     window.addEventListener('load', fixCanvasSize);
     document.addEventListener('DOMContentLoaded', fixCanvasSize);
     setTimeout(fixCanvasSize, 100);
