@@ -191,7 +191,7 @@
     --b-motto-top: 56.55%;
     --b-motto-width: 87.6%;
     --b-motto-height: 6.2%;
-    --b-motto-font: 22.73px;
+    --b-motto-font: 20.2px;
 
     /* Видимая область прокрутки NFT */
     --b-scroll-top: 16.8%;
@@ -380,7 +380,7 @@
 
 <style id="side-b-flip-hit-area-only-0102">
 /* Зона клика следует за фактической позицией буквы B, заданной в --b-letter-*. */
-#sceneContainer > a#btnFlipSide.side-letter-flip[href="index.html"] {
+#overlayViewport > a#btnFlipSide.side-letter-flip[href="index.html"] {
     left: var(--b-letter-left, 21.1%) !important;
     top: var(--b-letter-top, 11.7%) !important;
     width: 88px !important;
@@ -397,39 +397,28 @@
 }
 </style>
 
-<style id="sideb-native-cassette-canvas-0103">
-/* Фиксированная логическая плоскость совпадает с исходным размером cassette-b.png.
-   Вся кассета, коллекция, тексты и скроллбар масштабируются одним коэффициентом. */
-#workspace {
-    width: 100vw !important;
-    height: 100vh !important;
-    overflow: hidden !important;
-}
-#scene {
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
+<style id="sideb-responsive-composition-0104">
+/* Единая композиция: координаты интерфейса — как в локальном viewport 1366x648.
+   PNG кассеты имеет 1536x1024 и расположен по центру общей логической плоскости. */
+#workspace { width:100vw !important; height:100vh !important; overflow:hidden !important; }
+#scene { width:100% !important; height:100% !important; padding:0 !important; overflow:hidden !important; }
 #sceneContainer {
-    position: absolute !important;
-    display: block !important;
-    top: 50% !important;
-    left: 50% !important;
-    width: auto !important;
-    height: auto !important;
-    max-width: none !important;
-    max-height: none !important;
-    transform-origin: center center !important;
-    opacity: 0;
+    position:absolute !important; display:block !important;
+    top:50% !important; left:50% !important;
+    width:2158.617284px !important; height:1024px !important;
+    max-width:none !important; max-height:none !important;
+    overflow:hidden !important; transform-origin:center center !important; opacity:0;
 }
 #cassette {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: fill !important;
-    display: block !important;
+    position:absolute !important; left:311.308642px !important; top:0 !important;
+    width:1536px !important; height:1024px !important;
+    max-width:none !important; max-height:none !important;
+    object-fit:fill !important; display:block !important;
+}
+#overlayViewport {
+    position:absolute !important; left:0 !important; top:0 !important;
+    width:1366px !important; height:648px !important;
+    transform:scale(1.580246913580) !important; transform-origin:top left !important;
 }
 </style>
 
@@ -460,6 +449,7 @@
         <section id="scene">
             <div id="sceneContainer">
                 <img id="cassette" src="assets/cassette-b.png" alt="SCPM Cassette Side B">
+                <div id="overlayViewport">
                 <div id="cassetteNew" aria-hidden="true">NEW</div>
                 <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
                 <div class="cassette-tabs" role="tablist" aria-label="Выбор монеты">
@@ -488,6 +478,7 @@
                 <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
                 <span class="side-glow-letter side-b-letter">B</span>
                 <span class="side-glow-side side-b-side">SIDE</span>
+                </div><!-- /#overlayViewport -->
             </div>
         </section>
 
@@ -1039,6 +1030,12 @@ window.addEventListener('DOMContentLoaded', () => {
         return Array.from(layer.querySelectorAll('.nft-collection-item'));
     }
 
+    function getRailScaleY() {
+        const cssHeight = rail.offsetHeight;
+        const visualHeight = rail.getBoundingClientRect().height;
+        return cssHeight > 0 && visualHeight > 0 ? visualHeight / cssHeight : 1;
+    }
+
     // Finds the vertical distance between row 1 and row 2 (3 coins per row).
     function getRowStep() {
         const cards = getCards();
@@ -1109,6 +1106,7 @@ window.addEventListener('DOMContentLoaded', () => {
         let delta = event.deltaY;
         if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) delta *= 40;
         else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) delta *= layer.clientHeight;
+        delta /= getRailScaleY();
 
         let steps = 0;
         const absDelta = Math.abs(delta);
@@ -1167,7 +1165,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const maxScroll = layer.scrollHeight - layer.clientHeight;
         const thumbTravel = rail.clientHeight - thumb.offsetHeight;
         if (maxScroll <= 0 || thumbTravel <= 0) return;
-        const deltaY = event.clientY - dragStartY;
+        const deltaY = (event.clientY - dragStartY) / getRailScaleY();
         layer.scrollTop = dragStartScroll + deltaY * (maxScroll / thumbTravel);
     });
 
@@ -1183,8 +1181,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const thumbTravel = rail.clientHeight - thumb.offsetHeight;
         if (maxScroll <= 0 || thumbTravel <= 0) return;
         const rect = rail.getBoundingClientRect();
+        const scaleY = getRailScaleY();
+        const localY = (event.clientY - rect.top) / scaleY;
         const targetTop = Math.max(0, Math.min(thumbTravel,
-            event.clientY - rect.top - thumb.offsetHeight / 2));
+            localY - thumb.offsetHeight / 2));
         layer.scrollTo({ top: (targetTop / thumbTravel) * maxScroll, behavior: 'smooth' });
     });
 
@@ -1205,45 +1205,39 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-<script id="sideb-native-cassette-scaler-0103">
+<script id="sideb-responsive-composition-scaler-0104">
 (function () {
     const container = document.getElementById('sceneContainer');
     const img = document.getElementById('cassette');
-    if (!container || !img) return;
+    const overlay = document.getElementById('overlayViewport');
+    if (!container || !img || !overlay) return;
 
-    function fitCassetteCanvas() {
-        if (!img.naturalWidth || !img.naturalHeight) return;
+    const DESIGN_WIDTH = 2158.61728395;
+    const DESIGN_HEIGHT = 1024;
 
-        const nativeW = img.naturalWidth;
-        const nativeH = img.naturalHeight;
-        container.style.width = nativeW + 'px';
-        container.style.height = nativeH + 'px';
-
-        const scale = Math.min(
-            window.innerWidth / nativeW,
-            window.innerHeight / nativeH
-        );
+    function fitCanvas() {
+        const scale = Math.min(window.innerWidth / DESIGN_WIDTH, window.innerHeight / DESIGN_HEIGHT);
         if (!Number.isFinite(scale) || scale <= 0) return;
-
-        container.style.transform =
-            'translate(-50%, -50%) scale(' + scale + ')';
+        container.style.width = DESIGN_WIDTH + 'px';
+        container.style.height = DESIGN_HEIGHT + 'px';
+        overlay.style.width = '1366px';
+        overlay.style.height = '648px';
+        overlay.style.transform = 'scale(1.580246913580)';
+        img.style.left = '311.30864198px';
+        img.style.top = '0';
+        img.style.width = '1536px';
+        img.style.height = '1024px';
+        container.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
         container.style.opacity = '1';
     }
 
-    if (img.complete && img.naturalWidth) {
-        requestAnimationFrame(fitCassetteCanvas);
-    } else {
-        img.addEventListener('load', fitCassetteCanvas, { once: true });
-    }
-
-    window.addEventListener('resize', fitCassetteCanvas, { passive: true });
-    window.addEventListener('orientationchange', fitCassetteCanvas, { passive: true });
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', fitCassetteCanvas, { passive: true });
-    }
-
-    setTimeout(fitCassetteCanvas, 100);
-    setTimeout(fitCassetteCanvas, 500);
+    if (img.complete && img.naturalWidth) requestAnimationFrame(fitCanvas);
+    else img.addEventListener('load', fitCanvas, { once: true });
+    window.addEventListener('resize', fitCanvas, { passive: true });
+    window.addEventListener('orientationchange', fitCanvas, { passive: true });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fitCanvas, { passive: true });
+    setTimeout(fitCanvas, 100);
+    setTimeout(fitCanvas, 500);
 })();
 </script>
 

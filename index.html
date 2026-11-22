@@ -38,19 +38,43 @@
             overflow: hidden !important;
         }
 
-        /* КОНТЕЙНЕР: Скрипт ниже будет жестко задавать ему размеры картинки */
+        /*
+           Геометрия 0104.
+           Логическая область повторяет исходную рабочую область локального файла
+           1366x648, а изображение кассеты 1536x1024 находится по центру.
+           Вся композиция масштабируется одним коэффициентом.
+        */
         body:not(.admin-mode) #sceneContainer {
             position: absolute !important;
             top: 50% !important;
             left: 50% !important;
+            width: 2158.617284px !important;
+            height: 1024px !important;
+            max-width: none !important;
+            max-height: none !important;
+            overflow: hidden !important;
             transform-origin: center center !important;
-            opacity: 0; /* Прячем до тех пор, пока скрипт не посчитает размер */
+            opacity: 0;
         }
-
         body:not(.admin-mode) #cassette {
-            width: 100% !important;
-            height: 100% !important;
+            position: absolute !important;
+            left: 311.308642px !important;
+            top: 0 !important;
+            width: 1536px !important;
+            height: 1024px !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: fill !important;
             display: block !important;
+        }
+        #overlayViewport {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 1366px !important;
+            height: 648px !important;
+            transform: scale(1.580246913580) !important;
+            transform-origin: top left !important;
         }
 
         /* =========================================================
@@ -183,7 +207,7 @@
 
         #lcdUserNICKNAME .nick-label {
             font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
-            font-size: 16px; /* Чуть увеличил для читаемости */
+            font-size: 13px;
             color: #00ff41;
             text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
             letter-spacing: 1px;
@@ -194,7 +218,7 @@
 
         #lcdUserNICKNAME .nick-value {
             font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
-            font-size: 16px;
+            font-size: 13px;
             color: #ffb000;
             text-shadow: 0 0 6px rgba(255, 176, 0, 0.8);
             letter-spacing: 1px;
@@ -217,7 +241,7 @@
             align-items: center;
             justify-content: center;
             font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: #00ff41;
             text-decoration: none;
@@ -268,7 +292,7 @@
         }
 
         #lcdStats .stat-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
             letter-spacing: 2px;
             margin-bottom: 2px;
@@ -283,7 +307,7 @@
         }
 
         #lcdStats .stat-row {
-            font-size: 15px; 
+            font-size: 12px; 
             font-weight: 700;
             color: #aaa;
             letter-spacing: 0;
@@ -352,8 +376,8 @@
         }
 
         #cassetteAudioPlayer svg {
-            width: 24px; /* Увеличен размер */
-            height: 24px;
+            width: 20px;
+            height: 20px;
             pointer-events: none;
         }
     </style>
@@ -385,7 +409,7 @@
     --a-motto-top: 56.4%;
     --a-motto-width: 87.6%;
     --a-motto-height: 6.2%;
-    --a-motto-font: 22.73px;
+    --a-motto-font: 20.2px;
 
     /* Буква A */
     --a-letter-left: 21%;
@@ -524,7 +548,7 @@
 </style>	
 
     <style id="side-a-flip-hit-area-only">
-    #sceneContainer > a.side-letter-flip[href="sideb.html"] {
+    #overlayViewport > a.side-letter-flip[href="sideb.html"] {
         position: absolute !important;
         left: var(--a-letter-left, 21%) !important;
         top: var(--a-letter-top, 11.7%) !important;
@@ -569,6 +593,7 @@
                 <button id="toggleEditBtn" type="button" title="Режим редактирования">✎ РЕДАКТИРОВАТЬ</button>
 
                 <img id="cassette" src="assets/cassette.png" alt="SCPM Cassette">
+                <div id="overlayViewport">
                 <div id="objectLayer"></div>
 
                 <span id="goldBtcLabel">GOLD BTC</span>
@@ -635,6 +660,7 @@
                     </div>
                     <span class="quote-divider">│</span>
                 </div>
+                </div><!-- /#overlayViewport -->
             </div>
         </section>
 
@@ -710,47 +736,47 @@
 })();
 
 /* ============================================================
-   3. МАГИЯ МАСШТАБИРОВАНИЯ (Кассета и контент сжимаются вместе)
+   3. ЕДИНАЯ ГЕОМЕТРИЯ КАССЕТЫ И ВСЕХ ЭЛЕМЕНТОВ — BUILD 0104
+   Координатная плоскость повторяет локальную версию 1366x648.
    ============================================================ */
 (function() {
-    function fixCanvasSize() {
-        var container = document.getElementById('sceneContainer');
-        var img = document.getElementById('cassette');
-        if (!container || !img) return;
+    const container = document.getElementById('sceneContainer');
+    const img = document.getElementById('cassette');
+    const overlay = document.getElementById('overlayViewport');
+    if (!container || !img || !overlay) return;
 
-        // Если картинка еще не загрузилась, ждем
-        if (!img.naturalWidth || !img.naturalHeight) {
-            img.onload = fixCanvasSize;
-            return;
-        }
+    const DESIGN_WIDTH = 2158.61728395;
+    const DESIGN_HEIGHT = 1024;
 
-        // 1. Заставляем контейнер принять точные пиксельные размеры картинки (например, 1920x1080)
-        var nativeW = img.naturalWidth;
-        var nativeH = img.naturalHeight;
-        container.style.width = nativeW + 'px';
-        container.style.height = nativeH + 'px';
+    function fitCanvas() {
+        const scale = Math.min(
+            window.innerWidth / DESIGN_WIDTH,
+            window.innerHeight / DESIGN_HEIGHT
+        );
+        if (!Number.isFinite(scale) || scale <= 0) return;
 
-        // 2. Вычисляем, насколько нужно уменьшить эту огромную картинку, чтобы она влезла в экран
-        var winW = window.innerWidth;
-        var winH = window.innerHeight;
-        var scale = Math.min(winW / nativeW, winH / nativeH);
+        container.style.width = DESIGN_WIDTH + 'px';
+        container.style.height = DESIGN_HEIGHT + 'px';
+        overlay.style.width = '1366px';
+        overlay.style.height = '648px';
+        overlay.style.transform = 'scale(1.580246913580)';
+        img.style.left = '311.30864198px';
+        img.style.top = '0';
+        img.style.width = '1536px';
+        img.style.height = '1024px';
 
-        // 3. Применяем масштаб к контейнеру (вместе со всеми монетами и надписями)
-        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
-        
-        // Показываем контейнер
+        container.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
         container.style.opacity = '1';
     }
 
-    window.addEventListener('resize', fixCanvasSize, { passive: true });
-    window.addEventListener('orientationchange', fixCanvasSize, { passive: true });
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', fixCanvasSize, { passive: true });
-    }
-    window.addEventListener('load', fixCanvasSize);
-    document.addEventListener('DOMContentLoaded', fixCanvasSize);
-    setTimeout(fixCanvasSize, 100);
-    setTimeout(fixCanvasSize, 500);
+    if (img.complete && img.naturalWidth) requestAnimationFrame(fitCanvas);
+    else img.addEventListener('load', fitCanvas, { once: true });
+
+    window.addEventListener('resize', fitCanvas, { passive: true });
+    window.addEventListener('orientationchange', fitCanvas, { passive: true });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fitCanvas, { passive: true });
+    setTimeout(fitCanvas, 100);
+    setTimeout(fitCanvas, 500);
 })();
 
 /* ============================================================
