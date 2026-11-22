@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/sideb.css">
     <style>
     /* =========================================================
-       1. СКРЫВАЕМ ПАНЕЛИ (ТО, ЧЕГО НЕ ХВАТАЛО)
+       1. СКРЫВАЕМ ПАНЕЛИ
        ========================================================= */
     #topbar, #properties, #statusbar {
         display: none !important;
@@ -34,24 +34,39 @@
         overflow: hidden !important;
     }
 
-    /* Контейнер принимает точные размеры картинки благодаря скрипту ниже */
-    body:not(.admin-mode) #sceneContainer {
+    /* =========================================================
+       2. ГЕОМЕТРИЯ (КАК НА СТОРОНЕ A)
+       ========================================================= */
+    #sceneContainer {
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
+        width: 2158.617284px !important;
+        height: 1024px !important;
         transform-origin: center center !important;
         opacity: 0; /* Появится после расчета */
     }
-    
-    body:not(.admin-mode) #cassette {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
+    #cassette {
+        position: absolute !important;
+        left: 311.308642px !important;
+        top: 0 !important;
+        width: 1536px !important;
+        height: 1024px !important;
+        object-fit: fill !important;
         display: block !important;
+    }
+    #overlayViewport {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 1366px !important;
+        height: 648px !important;
+        transform: scale(1.580246913580) !important;
+        transform-origin: top left !important;
     }
 
     /* =========================================================
-       2. БАЗОВЫЕ СТИЛИ СТОРОНЫ B
+       3. БАЗОВЫЕ СТИЛИ СТОРОНЫ B
        ========================================================= */
     #objectLayer.sideb-collection {
         position: absolute !important; left: 6.25% !important; top: 16.8% !important;
@@ -141,7 +156,7 @@
 
 <style id="sideb-manual-controls-0099">
 /* =========================================================
-   3. РУЧНЫЕ НАСТРОЙКИ (Проценты относительно картинки 1536x1024)
+   4. РУЧНЫЕ НАСТРОЙКИ (Координаты от холста 1366x648)
    ========================================================= */
 :root {
     --b-new-left: 56.5%; --b-new-top: 11.4%; --b-new-width: 8.55%; --b-new-height: 3.9%; --b-new-font: 22.5px;
@@ -240,33 +255,35 @@
             <div id="sceneContainer">
                 <img id="cassette" src="assets/cassette-b.png" alt="SCPM Cassette Side B">
                 
-                <div id="cassetteNew" aria-hidden="true">NEW</div>
-                <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
-                
-                <div class="cassette-tabs" role="tablist" aria-label="Выбор монеты">
-                    <button type="button" class="cassette-tab active" data-coin="BTC" role="tab" aria-selected="true" title="Коллекция GOLD BTC">GOLD BTC</button>
-                    <button type="button" class="cassette-tab" data-coin="ETH" role="tab" aria-selected="false" title="Коллекция SILVER ETH">SILVER ETH</button>
-                </div>
+                <div id="overlayViewport">
+                    <div id="cassetteNew" aria-hidden="true">NEW</div>
+                    <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
+                    
+                    <div class="cassette-tabs" role="tablist" aria-label="Выбор монеты">
+                        <button type="button" class="cassette-tab active" data-coin="BTC" role="tab" aria-selected="true" title="Коллекция GOLD BTC">GOLD BTC</button>
+                        <button type="button" class="cassette-tab" data-coin="ETH" role="tab" aria-selected="false" title="Коллекция SILVER ETH">SILVER ETH</button>
+                    </div>
 
-                <div id="collectionToggle">
-                    <button id="btnAllNfts">ВСЕ NFT</button>
-                    <button id="btnMyCollection" class="active">МОЯ КОЛЛЕКЦИЯ</button>
-                </div>
+                    <div id="collectionToggle">
+                        <button id="btnAllNfts">ВСЕ NFT</button>
+                        <button id="btnMyCollection" class="active">МОЯ КОЛЛЕКЦИЯ</button>
+                    </div>
 
-                <div id="objectLayer" class="sideb-collection"></div>
-                <div id="nftScrollRail" aria-label="Прокрутка коллекции NFT" role="scrollbar" aria-controls="objectLayer" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                    <div id="nftScrollThumb" tabindex="0" aria-label="Перетащить для прокрутки коллекции"></div>
-                </div>
-                
-                <div id="guestLoginBanner" style="display:none;">
-                    <a href="account.html">
-                        ● ВОЙДИТЕ В АККАУНТ, ЧТОБЫ УВИДЕТЬ ВАШУ КОЛЛЕКЦИЮ
-                    </a>
-                </div>
+                    <div id="objectLayer" class="sideb-collection"></div>
+                    <div id="nftScrollRail" aria-label="Прокрутка коллекции NFT" role="scrollbar" aria-controls="objectLayer" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div id="nftScrollThumb" tabindex="0" aria-label="Перетащить для прокрутки коллекции"></div>
+                    </div>
+                    
+                    <div id="guestLoginBanner" style="display:none;">
+                        <a href="account.html">
+                            ● ВОЙДИТЕ В АККАУНТ, ЧТОБЫ УВИДЕТЬ ВАШУ КОЛЛЕКЦИЮ
+                        </a>
+                    </div>
 
-                <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
-                <span class="side-glow-letter side-b-letter">B</span>
-                <span class="side-glow-side side-b-side">SIDE</span>
+                    <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
+                    <span class="side-glow-letter side-b-letter">B</span>
+                    <span class="side-glow-side side-b-side">SIDE</span>
+                </div><!-- /#overlayViewport -->
             </div>
         </section>
 
@@ -762,39 +779,46 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <script>
 /* ============================================================
-   3. МАГИЯ МАСШТАБИРОВАНИЯ (Точь-в-точь как на Стороне A)
+   5. МАГИЯ МАСШТАБИРОВАНИЯ (Точь-в-точь как на Стороне A)
    ============================================================ */
 (function() {
-    function fixCanvasSize() {
-        var container = document.getElementById('sceneContainer');
-        var img = document.getElementById('cassette');
-        if (!container || !img) return;
+    const container = document.getElementById('sceneContainer');
+    const img = document.getElementById('cassette');
+    const overlay = document.getElementById('overlayViewport');
+    if (!container || !img || !overlay) return;
 
-        if (!img.naturalWidth || !img.naturalHeight) {
-            img.onload = fixCanvasSize;
-            return;
-        }
+    const DESIGN_WIDTH = 2158.61728395;
+    const DESIGN_HEIGHT = 1024;
 
-        var nativeW = img.naturalWidth;
-        var nativeH = img.naturalHeight;
-        container.style.width = nativeW + 'px';
-        container.style.height = nativeH + 'px';
+    function fitCanvas() {
+        const scale = Math.min(
+            window.innerWidth / DESIGN_WIDTH,
+            window.innerHeight / DESIGN_HEIGHT
+        );
+        if (!Number.isFinite(scale) || scale <= 0) return;
 
-        var winW = window.innerWidth;
-        var winH = window.innerHeight;
-        var scale = Math.min(winW / nativeW, winH / nativeH);
+        container.style.width = DESIGN_WIDTH + 'px';
+        container.style.height = DESIGN_HEIGHT + 'px';
+        overlay.style.width = '1366px';
+        overlay.style.height = '648px';
+        overlay.style.transform = 'scale(1.580246913580)';
+        img.style.left = '311.30864198px';
+        img.style.top = '0';
+        img.style.width = '1536px';
+        img.style.height = '1024px';
 
-        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        container.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
         container.style.opacity = '1';
     }
 
-    window.addEventListener('resize', fixCanvasSize, { passive: true });
-    window.addEventListener('orientationchange', fixCanvasSize, { passive: true });
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', fixCanvasSize, { passive: true });
-    window.addEventListener('load', fixCanvasSize);
-    document.addEventListener('DOMContentLoaded', fixCanvasSize);
-    setTimeout(fixCanvasSize, 100);
-    setTimeout(fixCanvasSize, 500);
+    if (img.complete && img.naturalWidth) requestAnimationFrame(fitCanvas);
+    else img.addEventListener('load', fitCanvas, { once: true });
+
+    window.addEventListener('resize', fitCanvas, { passive: true });
+    window.addEventListener('orientationchange', fitCanvas, { passive: true });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fitCanvas, { passive: true });
+    setTimeout(fitCanvas, 100);
+    setTimeout(fitCanvas, 500);
 })();
 </script>
 
