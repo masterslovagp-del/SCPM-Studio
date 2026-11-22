@@ -7,16 +7,40 @@
     <link rel="stylesheet" href="css/editor.css">
     <link rel="stylesheet" href="css/sideb.css">
     <style>
-    /* Базовые стили */
-    .tool-btn.tab-btc.active { background: rgba(247, 147, 26, 0.2) !important; border-color: #f7931a !important; color: #f7931a !important; }
-    .tool-btn.tab-eth.active { background: rgba(98, 126, 234, 0.2) !important; border-color: #627eea !important; color: #627eea !important; }
+    /* =========================================================
+       1. СКРЫВАЕМ ПАНЕЛИ (ТО, ЧЕГО НЕ ХВАТАЛО)
+       ========================================================= */
+    #topbar, #properties, #statusbar {
+        display: none !important;
+    }
+
+    body:not(.admin-mode) #workspace {
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background: #202020 !important;
+    }
     
+    body:not(.admin-mode) #scene {
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Контейнер принимает точные размеры картинки благодаря скрипту ниже */
     body:not(.admin-mode) #sceneContainer {
         position: absolute !important;
         top: 50% !important;
         left: 50% !important;
         transform-origin: center center !important;
-        opacity: 0;
+        opacity: 0; /* Появится после расчета */
     }
     
     body:not(.admin-mode) #cassette {
@@ -26,6 +50,9 @@
         display: block !important;
     }
 
+    /* =========================================================
+       2. БАЗОВЫЕ СТИЛИ СТОРОНЫ B
+       ========================================================= */
     #objectLayer.sideb-collection {
         position: absolute !important; left: 6.25% !important; top: 16.8% !important;
         width: 82.6% !important; height: 39.06% !important; max-height: 39.06% !important;
@@ -114,7 +141,7 @@
 
 <style id="sideb-manual-controls-0099">
 /* =========================================================
-   SIDE B — РУЧНЫЕ НАСТРОЙКИ (Проценты относительно картинки)
+   3. РУЧНЫЕ НАСТРОЙКИ (Проценты относительно картинки 1536x1024)
    ========================================================= */
 :root {
     --b-new-left: 56.5%; --b-new-top: 11.4%; --b-new-width: 8.55%; --b-new-height: 3.9%; --b-new-font: 22.5px;
@@ -260,7 +287,7 @@
 <script src="js/sfx.js"></script>
 <script src="js/auth.js?v=2"></script>
 <script>
-/* ВСТРАИВАЕМ КЛАСС SideBViewer (без изменений) */
+/* ВСТРАИВАЕМ КЛАСС SideBViewer */
 class SideBViewer {
     constructor() {
         this.layer = null;
@@ -735,7 +762,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <script>
 /* ============================================================
-   МАГИЯ МАСШТАБИРОВАНИЯ (Точь-в-точь как на Стороне A)
+   3. МАГИЯ МАСШТАБИРОВАНИЯ (Точь-в-точь как на Стороне A)
    ============================================================ */
 (function() {
     function fixCanvasSize() {
