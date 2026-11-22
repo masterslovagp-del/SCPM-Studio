@@ -397,20 +397,35 @@
 }
 </style>
 
-<style id="sideb-responsive-composition-0105">
-/* Side B: place the complete design canvas inside the actual visible scene.
-   This avoids percentage-translation drift and clipping on different viewports. */
+<style id="sideb-responsive-composition-0106">
+/* Side B — закрепляем сцену на всю видимую область браузера.
+   Координатная плоскость 0105, cassette image и overlayViewport
+   сохранены: меняется только ограничивающий viewport, из-за которого
+   на части экранов сцена сжималась до ширины flex-колонки и обрезалась. */
 #workspace {
+    position: fixed !important;
+    inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    margin: 0 !important;
+    display: block !important;
     overflow: hidden !important;
 }
+@supports (height: 100dvh) {
+    #workspace { height: 100dvh !important; }
+}
 #scene {
-    position: relative !important;
+    position: absolute !important;
+    inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
     padding: 0 !important;
+    display: block !important;
+    flex: none !important;
     overflow: hidden !important;
+    background: #202020 !important;
 }
 #sceneContainer {
     position: absolute !important;
@@ -1229,7 +1244,7 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-<script id="sideb-responsive-composition-scaler-0105">
+<script id="sideb-responsive-composition-scaler-0106">
 (function () {
     const scene = document.getElementById('scene');
     const container = document.getElementById('sceneContainer');
@@ -1237,14 +1252,15 @@ window.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlayViewport');
     if (!scene || !container || !img || !overlay) return;
 
-    // The original layout's logical viewport, extended symmetrically
-    // so the 1536x1024 cassette image sits centred behind it.
+    // Keep the 0105 design plane and every overlay coordinate unchanged.
+    // The scene itself is now fixed to the browser viewport, so the scaler
+    // can no longer receive the width of a shrunken flex column.
     const DESIGN_WIDTH = 2158.61728395;
     const DESIGN_HEIGHT = 1024;
 
     function fitCanvas() {
-        const availableWidth = scene.clientWidth;
-        const availableHeight = scene.clientHeight;
+        const availableWidth = Math.max(1, window.innerWidth || scene.clientWidth);
+        const availableHeight = Math.max(1, window.innerHeight || scene.clientHeight);
         if (!availableWidth || !availableHeight) return;
 
         const scale = Math.min(
@@ -1255,8 +1271,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const renderedWidth = DESIGN_WIDTH * scale;
         const renderedHeight = DESIGN_HEIGHT * scale;
-        const offsetX = Math.max(0, (availableWidth - renderedWidth) / 2);
-        const offsetY = Math.max(0, (availableHeight - renderedHeight) / 2);
+        const offsetX = (availableWidth - renderedWidth) / 2;
+        const offsetY = (availableHeight - renderedHeight) / 2;
 
         container.style.width = DESIGN_WIDTH + 'px';
         container.style.height = DESIGN_HEIGHT + 'px';
@@ -1265,6 +1281,7 @@ window.addEventListener('DOMContentLoaded', () => {
         container.style.setProperty('transform-origin', 'top left', 'important');
         container.style.transform = 'scale(' + scale + ')';
 
+        // Keep the overlay/image relationship from 0105 exactly as-is.
         overlay.style.width = '1366px';
         overlay.style.height = '648px';
         overlay.style.transform = 'scale(1.580246913580)';
