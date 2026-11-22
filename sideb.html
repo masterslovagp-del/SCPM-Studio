@@ -7,11 +7,25 @@
     <link rel="stylesheet" href="css/editor.css">
     <link rel="stylesheet" href="css/sideb.css">
     <style>
-    /* Базовые стили (ВСЕ СОХРАНЕНЫ КАК БЫЛО) */
+    /* Базовые стили */
     .tool-btn.tab-btc.active { background: rgba(247, 147, 26, 0.2) !important; border-color: #f7931a !important; color: #f7931a !important; }
     .tool-btn.tab-eth.active { background: rgba(98, 126, 234, 0.2) !important; border-color: #627eea !important; color: #627eea !important; }
-    #sceneContainer { overflow: hidden !important; position: relative !important; }
     
+    body:not(.admin-mode) #sceneContainer {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform-origin: center center !important;
+        opacity: 0;
+    }
+    
+    body:not(.admin-mode) #cassette {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
     #objectLayer.sideb-collection {
         position: absolute !important; left: 6.25% !important; top: 16.8% !important;
         width: 82.6% !important; height: 39.06% !important; max-height: 39.06% !important;
@@ -41,41 +55,24 @@
     }
 
     .nft-back { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; position: relative; border-radius: 50%; overflow: hidden; }
-    .nft-back-hint { display: none; }
     .nft-empty-hint { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 70px; }
     .nft-empty-hint span:first-child { font-family: "Courier New", monospace; font-size: 13px; color: #777; letter-spacing: 2px; }
     .nft-empty-hint span:last-child { font-family: "Segoe UI", sans-serif; font-size: 11px; color: #999; }
 
-    /* Стиль для гостевой кнопки */
     #guestLoginBanner {
-        position: absolute;
-        bottom: 91%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 20;
-        text-align: center;
-        animation: guestFadeIn 0.5s ease;
+        position: absolute; bottom: 91%; left: 50%; transform: translateX(-50%);
+        z-index: 20; text-align: center; animation: guestFadeIn 0.5s ease;
     }
     @keyframes guestFadeIn {
         from { opacity: 0; transform: translate(-50%, 10px); }
         to { opacity: 1; transform: translate(-50%, 0); }
     }
     #guestLoginBanner a {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: rgba(0, 20, 0, 0.85);
-        border: 1px solid #00ff41;
-        border-radius: 6px;
-        font-family: "Courier New", monospace;
-        font-size: 12px;
-        font-weight: 700;
-        color: #00ff41;
-        text-decoration: none;
-        letter-spacing: 1px;
-        text-shadow: 0 0 8px rgba(0, 255, 65, 0.8);
-        box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+        background: rgba(0, 20, 0, 0.85); border: 1px solid #00ff41; border-radius: 6px;
+        font-family: "Courier New", monospace; font-size: 12px; font-weight: 700;
+        color: #00ff41; text-decoration: none; letter-spacing: 1px;
+        text-shadow: 0 0 8px rgba(0, 255, 65, 0.8); box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
         transition: all 0.2s ease;
     }
     #guestLoginBanner a:hover {
@@ -86,7 +83,7 @@
     </style>
 
 <style id="sideb-true-3d-coin">
-/* 3D Coin Styles (БЕЗ ИЗМЕНЕНИЙ) */
+/* 3D Coin Styles */
 .nft-coin-scene { width: var(--nft-coin); height: var(--nft-coin); perspective: 1500px; position: relative; z-index: 1; }
 .nft-coin-3d { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: coinIdleSpin 20s linear infinite; }
 .nft-collection-item:hover .nft-coin-3d, .nft-collection-item.is-dragging .nft-coin-3d { animation-play-state: paused; }
@@ -114,353 +111,82 @@
 .cassette-tab[data-coin="BTC"]:not(.active):hover { color: rgba(247, 147, 26, 0.7); text-shadow: 0 0 8px rgba(247, 147, 26, 0.4); }
 .cassette-tab[data-coin="ETH"]:not(.active):hover { color: rgba(98, 126, 234, 0.75); text-shadow: 0 0 8px rgba(98, 126, 234, 0.4); }
 </style>
-<style id="sideb-public-layout-match-side-a-0098">
-/* =========================================================
-   SIDE B — ПУБЛИЧНЫЙ РЕЖИМ, КАК НА SIDE A
-   Убираем верхнюю панель и правую Properties-панель.
-   NFT-слой остаётся внутри той же кассеты и продолжает
-   масштабироваться относительно #sceneContainer.
-   ========================================================= */
-#topbar,
-#properties,
-#statusbar {
-    display: none !important;
-}
-
-#workspace {
-    width: 100vw !important;
-    height: 100vh !important;
-    overflow: hidden !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    background: #202020 !important;
-}
-
-#scene {
-    width: 100% !important;
-    height: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-    #scene {
-        width: 100vw !important;
-        height: 100vh !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        overflow: hidden !important;
-        background: #202020 !important;
-    }
-
- body:not(.admin-mode) #sceneContainer {
-        position: relative !important;
-        display: inline-block !important;
-        max-width: 100vw !important;
-        max-height: 100vh !important;
-    }
-
-    #cassette {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
-        display: block !important;
-    }
-</style>
 
 <style id="sideb-manual-controls-0099">
 /* =========================================================
-   SIDE B — РУЧНЫЕ НАСТРОЙКИ НАДПИСЕЙ, КОЛЛЕКЦИИ И СКРОЛЛА
-   Все координаты заданы относительно #sceneContainer.
-   Меняй значения только в :root.
+   SIDE B — РУЧНЫЕ НАСТРОЙКИ (Проценты относительно картинки)
    ========================================================= */
 :root {
-    /* NEW */
-    --b-new-left: 56.5%;
-    --b-new-top: 11.4%;
-    --b-new-width: 8.55%;
-    --b-new-height: 3.9%;
-    --b-new-font: 22.5px;
-
-    /* Слоган */
-    --b-motto-left: 6.2%;
-    --b-motto-top: 56.55%;
-    --b-motto-width: 87.6%;
-    --b-motto-height: 6.2%;
-    --b-motto-font: 20.2px;
-
-    /* Видимая область прокрутки NFT */
-    --b-scroll-top: 16.8%;
-    --b-scroll-height: 39.06%;
-
-    /* Отдельный скроллбар — его X можно двигать независимо от NFT */
-    --b-scroll-x: 81.3%;
-    --b-scroll-y: 16.8%;
-    --b-scroll-width: 5px;
-    --b-scroll-thumb: #bbbbbb;
-    --b-scroll-track: transparent;
-
-    /* GOLD BTC / SILVER ETH — вкладки */
-    --b-tabs-top: 14%;
-    --b-btc-left: 22.8%;
-    --b-eth-right: 19.7%;
-    --b-tabs-font: 14px;
-
-    /* ВСЕ NFT */
-    --b-all-left: 22.9%;
-    --b-all-top: 16.5%;
-
-    /* МОЯ КОЛЛЕКЦИЯ */
-    --b-mine-right: 18.3%;
-    --b-mine-top: 16.5%;
-
-    /* Буква B */
-    --b-letter-left: 21.1%;
-    --b-letter-top: 11.7%;
-    --b-letter-font: 30px;
-
-    /* SIDE */
-    --b-side-left: 20.9%;
-    --b-side-top: 16%;
-    --b-side-font: 10px;
-
-    /* Сообщение для гостя */
-    --b-guest-left: 50%;
-    --b-guest-bottom: 91%;
-    --b-guest-font: 12px;
-
-    /* Расстояние между NFT */
-    --b-coin-gap-x: 12px;
-    --b-coin-gap-y: 4px;
-
-    /* Номера NFT под монетами */
-    --b-serial-font: 12px;
-    --b-serial-gap: 14px;
-
-    /* Положение и размер всей коллекции */
-    --b-collection-left: 12.5%;
-    --b-collection-top: var(--b-scroll-top);
-    --b-collection-width: 75.4%;
-    --b-collection-height: var(--b-scroll-height);
-    --b-collection-padding-top: 2px;
+    --b-new-left: 56.5%; --b-new-top: 11.4%; --b-new-width: 8.55%; --b-new-height: 3.9%; --b-new-font: 22.5px;
+    --b-motto-left: 6.2%; --b-motto-top: 56.55%; --b-motto-width: 87.6%; --b-motto-height: 6.2%; --b-motto-font: 20.2px;
+    --b-scroll-top: 16.8%; --b-scroll-height: 39.06%;
+    --b-scroll-x: 81.3%; --b-scroll-y: 16.8%; --b-scroll-width: 5px; --b-scroll-thumb: #bbbbbb; --b-scroll-track: transparent;
+    --b-tabs-top: 14%; --b-btc-left: 22.8%; --b-eth-right: 19.7%; --b-tabs-font: 14px;
+    --b-all-left: 22.9%; --b-all-top: 16.5%;
+    --b-mine-right: 18.3%; --b-mine-top: 16.5%;
+    --b-letter-left: 21.1%; --b-letter-top: 11.7%; --b-letter-font: 30px;
+    --b-side-left: 20.9%; --b-side-top: 16%; --b-side-font: 10px;
+    --b-guest-left: 50%; --b-guest-bottom: 91%; --b-guest-font: 12px;
+    --b-coin-gap-x: 12px; --b-coin-gap-y: 4px;
+    --b-serial-font: 12px; --b-serial-gap: 14px;
+    --b-collection-left: 12.5%; --b-collection-top: var(--b-scroll-top); --b-collection-width: 75.4%; --b-collection-height: var(--b-scroll-height); --b-collection-padding-top: 2px;
 }
 
-/* NEW */
-#cassetteNew {
-    left: var(--b-new-left) !important;
-    top: var(--b-new-top) !important;
-    width: var(--b-new-width) !important;
-    height: var(--b-new-height) !important;
-    font-size: var(--b-new-font) !important;
-}
-
-/* Слоган */
-#cassetteMotto {
-    left: var(--b-motto-left) !important;
-    top: var(--b-motto-top) !important;
-    width: var(--b-motto-width) !important;
-    height: var(--b-motto-height) !important;
-    font-size: var(--b-motto-font) !important;
-}
-
-/* Вкладки GOLD BTC / SILVER ETH */
-.cassette-tab {
-    top: var(--b-tabs-top) !important;
-    font-size: var(--b-tabs-font) !important;
-}
+#cassetteNew { left: var(--b-new-left) !important; top: var(--b-new-top) !important; width: var(--b-new-width) !important; height: var(--b-new-height) !important; font-size: var(--b-new-font) !important; }
+#cassetteMotto { left: var(--b-motto-left) !important; top: var(--b-motto-top) !important; width: var(--b-motto-width) !important; height: var(--b-motto-height) !important; font-size: var(--b-motto-font) !important; }
+.cassette-tab { top: var(--b-tabs-top) !important; font-size: var(--b-tabs-font) !important; }
 .cassette-tab[data-coin="BTC"] { left: var(--b-btc-left) !important; }
 .cassette-tab[data-coin="ETH"] { right: var(--b-eth-right) !important; }
-
-/* Переключатели ВСЕ NFT / МОЯ КОЛЛЕКЦИЯ */
-#btnAllNfts {
-    left: var(--b-all-left) !important;
-    top: var(--b-all-top) !important;
-}
-#btnMyCollection {
-    right: var(--b-mine-right) !important;
-    top: var(--b-mine-top) !important;
-}
-
-/* Буква B и подпись SIDE */
-.side-glow-letter.side-b-letter {
-    left: var(--b-letter-left) !important;
-    top: var(--b-letter-top) !important;
-    font-size: var(--b-letter-font) !important;
-}
-.side-glow-side.side-b-side {
-    left: var(--b-side-left) !important;
-    top: var(--b-side-top) !important;
-    font-size: var(--b-side-font) !important;
-}
-
-/* Гостевое сообщение */
-#guestLoginBanner {
-    left: var(--b-guest-left) !important;
-    bottom: var(--b-guest-bottom) !important;
-}
+#btnAllNfts { left: var(--b-all-left) !important; top: var(--b-all-top) !important; }
+#btnMyCollection { right: var(--b-mine-right) !important; top: var(--b-mine-top) !important; }
+.side-glow-letter.side-b-letter { left: var(--b-letter-left) !important; top: var(--b-letter-top) !important; font-size: var(--b-letter-font) !important; }
+.side-glow-side.side-b-side { left: var(--b-side-left) !important; top: var(--b-side-top) !important; font-size: var(--b-side-font) !important; }
+#guestLoginBanner { left: var(--b-guest-left) !important; bottom: var(--b-guest-bottom) !important; }
 #guestLoginBanner a { font-size: var(--b-guest-font) !important; }
+.nft-item-serial { font-size: var(--b-serial-font) !important; margin-top: var(--b-serial-gap) !important; }
 
-/* Номера под монетами */
-.nft-item-serial {
-    font-size: var(--b-serial-font) !important;
-    margin-top: var(--b-serial-gap) !important;
-}
-
-/* Коллекция: фиксированные колонки по диаметру монеты и заданный gap.
-   Здесь нет shorthand gap, который мог бы перезаписать row/column-gap. */
 #objectLayer.sideb-collection {
-    left: var(--b-collection-left) !important;
-    top: var(--b-collection-top) !important;
-    width: var(--b-collection-width) !important;
-    height: var(--b-collection-height) !important;
-    max-height: var(--b-collection-height) !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, var(--nft-coin)) !important;
-    justify-content: center !important;
-    justify-items: center !important;
-    align-items: start !important;
-    align-content: start !important;
-    column-gap: var(--b-coin-gap-x) !important;
-    row-gap: var(--b-coin-gap-y) !important;
+    left: var(--b-collection-left) !important; top: var(--b-collection-top) !important;
+    width: var(--b-collection-width) !important; height: var(--b-collection-height) !important; max-height: var(--b-collection-height) !important;
+    display: grid !important; grid-template-columns: repeat(3, var(--nft-coin)) !important;
+    justify-content: center !important; justify-items: center !important; align-items: start !important; align-content: start !important;
+    column-gap: var(--b-coin-gap-x) !important; row-gap: var(--b-coin-gap-y) !important;
     padding: var(--b-collection-padding-top) 0 2px 0 !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+    overflow-x: hidden !important; overflow-y: auto !important;
+    scrollbar-width: none !important; -ms-overflow-style: none !important;
 }
-#objectLayer.sideb-collection::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-}
+#objectLayer.sideb-collection::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
-/* Внешний скроллбар: позиция X/Y регулируется отдельно от сетки монет. */
 #nftScrollRail {
-    position: absolute !important;
-    left: var(--b-scroll-x) !important;
-    top: var(--b-scroll-y) !important;
-    width: var(--b-scroll-width) !important;
-    height: var(--b-scroll-height) !important;
-    box-sizing: border-box !important;
-    background: var(--b-scroll-track) !important;
-    border: 1px solid rgba(210, 210, 210, .42) !important;
-    border-radius: 999px !important;
-    z-index: 100 !important;
-    display: block;
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    cursor: pointer;
-    box-shadow: 0 0 4px rgba(0,0,0,.55);
+    position: absolute !important; left: var(--b-scroll-x) !important; top: var(--b-scroll-y) !important;
+    width: var(--b-scroll-width) !important; height: var(--b-scroll-height) !important;
+    box-sizing: border-box !important; background: var(--b-scroll-track) !important;
+    border: 1px solid rgba(210, 210, 210, .42) !important; border-radius: 999px !important;
+    z-index: 100 !important; display: block; visibility: visible !important; opacity: 1 !important;
+    pointer-events: auto !important; cursor: pointer; box-shadow: 0 0 4px rgba(0,0,0,.55);
 }
 #nftScrollThumb {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0;
-    width: 100% !important;
-    min-height: 30px;
-    box-sizing: border-box !important;
-    border: 1px solid rgba(255,255,255,.38) !important;
-    border-radius: 999px !important;
-    background: var(--b-scroll-thumb) !important;
+    position: absolute !important; left: 0 !important; top: 0; width: 100% !important; min-height: 30px;
+    box-sizing: border-box !important; border: 1px solid rgba(255,255,255,.38) !important;
+    border-radius: 999px !important; background: var(--b-scroll-thumb) !important;
     box-shadow: 0 0 5px rgba(0,0,0,.55), inset 0 0 2px rgba(255,255,255,.55);
-    cursor: grab;
-    touch-action: none;
-    user-select: none;
+    cursor: grab; touch-action: none; user-select: none;
 }
 #nftScrollThumb:hover { background: #f7931a !important; }
 #nftScrollThumb:active { cursor: grabbing; }
 </style>
 
-
-
 <style id="side-b-flip-hit-area-only-0102">
-/* Зона клика следует за фактической позицией буквы B, заданной в --b-letter-*. */
-#overlayViewport > a#btnFlipSide.side-letter-flip[href="index.html"] {
+#sceneContainer > a#btnFlipSide.side-letter-flip[href="index.html"] {
     left: var(--b-letter-left, 21.1%) !important;
     top: var(--b-letter-top, 11.7%) !important;
-    width: 88px !important;
-    height: 92px !important;
+    width: 88px !important; height: 92px !important;
     transform: translate(-50%, -50%) !important;
-    display: block !important;
-    z-index: 1000 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
+    display: block !important; z-index: 1000 !important;
+    pointer-events: auto !important; cursor: pointer !important;
 }
-.side-glow-letter.side-b-letter,
-.side-glow-side.side-b-side {
-    pointer-events: none !important;
-}
+.side-glow-letter.side-b-letter, .side-glow-side.side-b-side { pointer-events: none !important; }
 </style>
-
-<style id="sideb-responsive-composition-0106">
-/* Side B — закрепляем сцену на всю видимую область браузера.
-   Координатная плоскость 0105, cassette image и overlayViewport
-   сохранены: меняется только ограничивающий viewport, из-за которого
-   на части экранов сцена сжималась до ширины flex-колонки и обрезалась. */
-#workspace {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    margin: 0 !important;
-    display: block !important;
-    overflow: hidden !important;
-}
-@supports (height: 100dvh) {
-    #workspace { height: 100dvh !important; }
-}
-#scene {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    display: block !important;
-    flex: none !important;
-    overflow: hidden !important;
-    background: #202020 !important;
-}
-#sceneContainer {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 2158.617284px !important;
-    height: 1024px !important;
-    max-width: none !important;
-    max-height: none !important;
-    overflow: hidden !important;
-    transform-origin: top left !important;
-    opacity: 0;
-}
-#cassette {
-    position: absolute !important;
-    left: 311.308642px !important;
-    top: 0 !important;
-    width: 1536px !important;
-    height: 1024px !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: fill !important;
-    display: block !important;
-}
-#overlayViewport {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 1366px !important;
-    height: 648px !important;
-    transform: scale(1.580246913580) !important;
-    transform-origin: top left !important;
-}
-</style>
-
 </head>
 <body>
 <div id="app">
@@ -475,8 +201,6 @@
             <div class="toolbar-separator"></div>
             <button id="tabBtc" class="tool-btn tab-btc active">GOLD BTC</button>
             <button id="tabEth" class="tool-btn tab-eth">SILVER ETH</button>
-            
-            <!-- Музыкальный плеер -->
             <button id="btnMusicPrev" class="tool-btn" title="Предыдущий трек" style="font-size:14px; padding:4px 8px;">⏮</button>
             <button id="btnMusicToggle" class="tool-btn" title="Музыка" style="font-size:16px; padding:4px 10px;">🔇</button>
             <button id="btnMusicNext" class="tool-btn" title="Следующий трек" style="font-size:14px; padding:4px 8px;">⏭</button>
@@ -488,15 +212,15 @@
         <section id="scene">
             <div id="sceneContainer">
                 <img id="cassette" src="assets/cassette-b.png" alt="SCPM Cassette Side B">
-                <div id="overlayViewport">
+                
                 <div id="cassetteNew" aria-hidden="true">NEW</div>
                 <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
+                
                 <div class="cassette-tabs" role="tablist" aria-label="Выбор монеты">
                     <button type="button" class="cassette-tab active" data-coin="BTC" role="tab" aria-selected="true" title="Коллекция GOLD BTC">GOLD BTC</button>
                     <button type="button" class="cassette-tab" data-coin="ETH" role="tab" aria-selected="false" title="Коллекция SILVER ETH">SILVER ETH</button>
                 </div>
 
-                <!-- Переключатель -->
                 <div id="collectionToggle">
                     <button id="btnAllNfts">ВСЕ NFT</button>
                     <button id="btnMyCollection" class="active">МОЯ КОЛЛЕКЦИЯ</button>
@@ -507,7 +231,6 @@
                     <div id="nftScrollThumb" tabindex="0" aria-label="Перетащить для прокрутки коллекции"></div>
                 </div>
                 
-                <!-- Неоновая кнопка для гостей -->
                 <div id="guestLoginBanner" style="display:none;">
                     <a href="account.html">
                         ● ВОЙДИТЕ В АККАУНТ, ЧТОБЫ УВИДЕТЬ ВАШУ КОЛЛЕКЦИЮ
@@ -517,7 +240,6 @@
                 <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
                 <span class="side-glow-letter side-b-letter">B</span>
                 <span class="side-glow-side side-b-side">SIDE</span>
-                </div><!-- /#overlayViewport -->
             </div>
         </section>
 
@@ -538,6 +260,7 @@
 <script src="js/sfx.js"></script>
 <script src="js/auth.js?v=2"></script>
 <script>
+/* ВСТРАИВАЕМ КЛАСС SideBViewer (без изменений) */
 class SideBViewer {
     constructor() {
         this.layer = null;
@@ -546,26 +269,14 @@ class SideBViewer {
         this.viewMode = 'mine';
         this.coinMeta = {
             BTC: {
-                title: 'GOLD BTC',
-                sprite: 'assets/sprites/btc.png',
-                back: 'assets/sprites/btc-back.png?v=0074',
-                color: '#f7931a',
-                protocol: 'ORDINALS',
-                engrave: '#3d2804',
-                qrDark: '#5a3505',
-                qrBox: { left: 28, top: 33.2, size: 18 },
-                serialArc: { path: 'M 8,45 A 42,44 0 0 0 92,48', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
+                title: 'GOLD BTC', sprite: 'assets/sprites/btc.png', back: 'assets/sprites/btc-back.png?v=0074',
+                color: '#f7931a', protocol: 'ORDINALS', engrave: '#3d2804', qrDark: '#5a3505',
+                qrBox: { left: 28, top: 33.2, size: 18 }, serialArc: { path: 'M 8,45 A 42,44 0 0 0 92,48', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
             },
             ETH: {
-                title: 'SILVER ETH',
-                sprite: 'assets/sprites/eth.png',
-                back: 'assets/sprites/eth-back.png?v=0074',
-                color: '#627eea',
-                protocol: 'ERC-721',
-                engrave: '#1e2228',
-                qrDark: '#3f4348',
-                qrBox: { left: 27.3, top: 33.3, size: 19 },
-                serialArc: { path: 'M 8,43 A 42,46 0 0 0 92,47', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
+                title: 'SILVER ETH', sprite: 'assets/sprites/eth.png', back: 'assets/sprites/eth-back.png?v=0074',
+                color: '#627eea', protocol: 'ERC-721', engrave: '#1e2228', qrDark: '#3f4348',
+                qrBox: { left: 27.3, top: 33.3, size: 19 }, serialArc: { path: 'M 8,43 A 42,46 0 0 0 92,47', fontSize: 6.6, letterSpacing: 0.85, startOffset: '50%', svgH: '95.4%' }
             }
         };
         this.defaultCoinSize = 118;
@@ -575,7 +286,7 @@ class SideBViewer {
 
     async init() {
         this.layer = document.getElementById('objectLayer');
-        if (!this.layer) { console.error('[SideB] objectLayer not found'); return; }
+        if (!this.layer) return;
         this.ensureQrLib();
         this.syncCoinSize();
         this.bindTabs();
@@ -590,20 +301,12 @@ class SideBViewer {
             if (!window.scpmAuth) return;
             var session = await window.scpmAuth.session();
             this._cloudUser = (session && session.user) ? session.user : null;
-            
-            if (!this._cloudUser) {
-                this.viewMode = 'all';
-            } else {
-                this.viewMode = 'mine';
-            }
-            
+            this.viewMode = this._cloudUser ? 'mine' : 'all';
             this.updateToggleUI();
             await this.loadCloudCollection();
             this.render();
             this.updateStatus();
-        } catch (e) {
-            console.warn(e);
-        }
+        } catch (e) { console.warn(e); }
     }
 
     bindToggle() {
@@ -613,7 +316,6 @@ class SideBViewer {
             this.updateToggleUI();
             this.loadCloudCollection().then(() => { this.render(); this.updateStatus(); });
         });
-        
         document.getElementById('btnAllNfts')?.addEventListener('click', () => {
             if (this.viewMode === 'all') return;
             this.viewMode = 'all';
@@ -627,9 +329,7 @@ class SideBViewer {
         var btnMine = document.getElementById('btnMyCollection');
         var btnAll = document.getElementById('btnAllNfts');
         var banner = document.getElementById('guestLoginBanner');
-
         if (!toggle) return;
-
         if (this._cloudUser) {
             toggle.style.display = 'flex';
             btnMine.classList.toggle('active', this.viewMode === 'mine');
@@ -643,54 +343,29 @@ class SideBViewer {
 
     async loadCloudCollection() {
         this._cloudOwned = null;
-        this._cloudUser = this._cloudUser; // сохраняем
         try {
             if (!window.scpmSupabase || !window.scpmAuth) return;
             var session = await window.scpmAuth.session();
-            
             let query = window.scpmSupabase.from('nfts').select('*');
-            
             if (session && session.user) {
                 this._cloudUser = session.user;
-                if (this.viewMode === 'mine') {
-                    query = query.eq('user_id', session.user.id);
-                } else {
-                    query = query.limit(50);
-                }
+                if (this.viewMode === 'mine') query = query.eq('user_id', session.user.id);
+                else query = query.limit(50);
             } else {
                 this._cloudUser = null;
                 query = query.limit(50);
             }
-
             var res = await query.order('serial', { ascending: true });
-            
-            if (res.error) {
-                console.warn('[SideB] Cloud NFT query:', res.error);
-                return;
-            }
+            if (res.error) return;
             this._cloudOwned = (res.data || []).map(function(n) {
-                return {
-                    id: n.id,
-                    coin: n.coin,
-                    serial: n.serial,
-                    tokenId: n.token_id,
-                    tx: n.tx_hash,
-                    passportUrl: n.passport_url,
-                    at: n.created_at ? new Date(n.created_at).getTime() : Date.now()
-                };
+                return { id: n.id, coin: n.coin, serial: n.serial, tokenId: n.token_id, tx: n.tx_hash, passportUrl: n.passport_url, at: n.created_at ? new Date(n.created_at).getTime() : Date.now() };
             });
         } catch (e) { console.warn(e); }
     }
 
     bindAccountBridge() {
         var link = document.getElementById('accountLink');
-        if (link) {
-            if (this._cloudUser) {
-                link.title = 'Личный кабинет — ' + (this._cloudUser.email || 'wallet');
-            } else {
-                link.title = 'Войти в личный кабинет';
-            }
-        }
+        if (link) link.title = this._cloudUser ? 'Личный кабинет — ' + (this._cloudUser.email || 'wallet') : 'Войти в личный кабинет';
     }
 
     ensureQrLib() {
@@ -710,8 +385,7 @@ class SideBViewer {
         if (window.qrTools) return qrTools.dataUrl(url, 140);
         if (typeof window.qrcode === 'undefined') return null;
         try {
-            var q = qrcode(0, 'M');
-            q.addData(url); q.make();
+            var q = qrcode(0, 'M'); q.addData(url); q.make();
             return q.createDataURL(4, 0);
         } catch (e) { return null; }
     }
@@ -731,8 +405,7 @@ class SideBViewer {
                     if (objs[j].id === 'btc') {
                         var w = objs[j].width || this.defaultCoinSize;
                         var sc = objs[j].scale != null ? objs[j].scale : 1;
-                        size = Math.round(w * sc);
-                        break;
+                        size = Math.round(w * sc); break;
                     }
                 }
             }
@@ -775,67 +448,48 @@ class SideBViewer {
         var img = new Image();
         img.onload = function () {
             try {
-                var c = document.createElement('canvas');
-                c.width = img.naturalWidth; c.height = img.naturalHeight;
-                var ctx = c.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                var im = ctx.getImageData(0, 0, c.width, c.height);
-                var d = im.data;
+                var c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+                var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0);
+                var im = ctx.getImageData(0, 0, c.width, c.height); var d = im.data;
                 var hex = String(darkColor || '#333333').replace('#','');
-                var cr = parseInt(hex.slice(0,2),16) || 51;
-                var cg = parseInt(hex.slice(2,4),16) || 51;
-                var cb = parseInt(hex.slice(4,6),16) || 51;
+                var cr = parseInt(hex.slice(0,2),16) || 51, cg = parseInt(hex.slice(2,4),16) || 51, cb = parseInt(hex.slice(4,6),16) || 51;
                 for (var i = 0; i < d.length; i += 4) {
                     var lum = (d[i] * 0.299) + (d[i+1] * 0.587) + (d[i+2] * 0.114);
                     if (lum >= 235) { d[i+3] = 0; continue; }
                     d[i] = cr; d[i+1] = cg; d[i+2] = cb;
                     d[i+3] = Math.max(90, Math.round(255 * (235 - lum) / 235));
                 }
-                ctx.putImageData(im, 0, 0);
-                qr.src = c.toDataURL('image/png');
+                ctx.putImageData(im, 0, 0); qr.src = c.toDataURL('image/png');
             } catch (e) {}
         };
         img.src = dataUrl;
     }
 
     buildBack(coin, meta, serialText) {
-        var disc = document.createElement('div');
-        disc.className = 'nft-back';
-
-        var base = document.createElement('img');
-        base.src = meta.back;
+        var disc = document.createElement('div'); disc.className = 'nft-back';
+        var base = document.createElement('img'); base.src = meta.back;
         base.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
         if (coin === 'ETH') base.style.setProperty('transform','scale(0.80)','important');
         if (coin === 'BTC') base.style.setProperty('transform','scale(0.81)','important');
-        
         disc.appendChild(base);
 
         var d = this.qrData(this.nftUrl(coin, serialText));
         if (d) {
-            var qr = document.createElement('img');
-            qr.src = d;
+            var qr = document.createElement('img'); qr.src = d;
             var box = meta.qrBox || { left: 22, top: 30, size: 20 };
             qr.style.cssText = `position:absolute;left:${box.left}%;top:${box.top}%;width:${box.size}%;height:${box.size}%;image-rendering:pixelated;border-radius:0;background:transparent;`;
-            disc.appendChild(qr);
-            this.makeQrTransparent(qr, d, meta.qrDark);
+            disc.appendChild(qr); this.makeQrTransparent(qr, d, meta.qrDark);
         }
 
-        var arc = meta.serialArc;
-        var uid = 'a' + Math.random().toString(36).slice(2, 7);
-        var ns = 'http://www.w3.org/2000/svg';
-        var svg = document.createElementNS(ns, 'svg');
+        var arc = meta.serialArc; var uid = 'a' + Math.random().toString(36).slice(2, 7);
+        var ns = 'http://www.w3.org/2000/svg'; var svg = document.createElementNS(ns, 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');
-        
         svg.style.cssText = `position:absolute;inset:0;width:100%;height:${arc.svgH};pointer-events:none;`;
-        
-        var defs = document.createElementNS(ns, 'defs');
-        var pB = document.createElementNS(ns, 'path');
+        var defs = document.createElementNS(ns, 'defs'); var pB = document.createElementNS(ns, 'path');
         pB.setAttribute('id', uid + 'b'); pB.setAttribute('d', arc.path); pB.setAttribute('fill', 'none');
         defs.appendChild(pB); svg.appendChild(defs);
-
-        var te = document.createElementNS(ns, 'text');
-        te.setAttribute('fill', meta.engrave);
-        te.style.cssText = `font-family:"Arial Black",Arial;font-weight:900;font-size:${arc.fontSize}px;letter-spacing:${arc.letterSpacing}px;opacity:.95;filter:drop-shadow(0 1px 0 rgba(255,255,255,.4)) drop-shadow(0 -1px 0 rgba(0,0,0,.45));`;
+        var te = document.createElementNS(ns, 'text'); te.setAttribute('fill', meta.engrave);
+        te.style.cssText = `font-family:"Arial Black",Arial;font-weight:900;font-size:${arc.fontSize}px;letter-spacing:${arc.letterSpacing}px;opacity:.95;`;
         var tp = document.createElementNS(ns, 'textPath');
         tp.setAttribute('href', '#' + uid + 'b'); tp.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + uid + 'b');
         tp.setAttribute('startOffset', '50%'); tp.setAttribute('text-anchor', 'middle');
@@ -848,8 +502,7 @@ class SideBViewer {
         if (!this.layer) return;
         this.layer.innerHTML = '';
         this.layer.classList.add('sideb-collection');
-        var list = this.filtered();
-        var meta = this.coinMeta[this.activeTab];
+        var list = this.filtered(); var meta = this.coinMeta[this.activeTab];
         
         if (list.length === 0) {
             var msg = (this.viewMode === 'mine') ? 'Купите NFT на стороне A' : 'Проданных монет пока нет';
@@ -858,127 +511,59 @@ class SideBViewer {
         }
 
         list.forEach(nft => {
-            var card = document.createElement('div');
-            card.className = 'nft-collection-item';
-            card.dataset.id = nft.id;
-            card.dataset.coin = nft.coin;
-            card.title = 'Кликните и удерживайте для вращения';
-
-            var scene = document.createElement('div');
-            scene.className = 'nft-coin-scene';
-
-            var coin3d = document.createElement('div');
-            coin3d.className = 'nft-coin-3d';
-
-            var edge = document.createElement('div');
-            edge.className = 'coin-edge';
-            var edgeSegments = 64;
-            var edgeRadius = this.coinPx() * 0.40; 
+            var card = document.createElement('div'); card.className = 'nft-collection-item';
+            card.dataset.id = nft.id; card.dataset.coin = nft.coin;
+            var scene = document.createElement('div'); scene.className = 'nft-coin-scene';
+            var coin3d = document.createElement('div'); coin3d.className = 'nft-coin-3d';
+            var edge = document.createElement('div'); edge.className = 'coin-edge';
+            var edgeSegments = 64; var edgeRadius = this.coinPx() * 0.40;
             var segmentWidth = (2 * Math.PI * edgeRadius / edgeSegments) * 1.08;
             for (let i = 0; i < edgeSegments; i++) {
-                let segment = document.createElement('div');
-                let angle = (360 / edgeSegments) * i;
-                segment.className = 'coin-edge-segment';
-                segment.style.width = segmentWidth + 'px';
+                let segment = document.createElement('div'); let angle = (360 / edgeSegments) * i;
+                segment.className = 'coin-edge-segment'; segment.style.width = segmentWidth + 'px';
                 segment.style.marginLeft = (-segmentWidth / 2) + 'px';
                 segment.style.transform = `rotateZ(${angle}deg) translateY(${-edgeRadius}px) rotateX(90deg)`;
                 edge.appendChild(segment);
             }
             coin3d.appendChild(edge);
+            var front = document.createElement('div'); front.className = 'coin-face coin-face-front';
+            var imgFront = document.createElement('img'); imgFront.src = meta.sprite; imgFront.draggable = false;
+            front.appendChild(imgFront); coin3d.appendChild(front);
+            var back = document.createElement('div'); back.className = 'coin-face coin-face-back';
+            back.appendChild(this.buildBack(nft.coin, meta, this.serialTextOf(nft)));
+            coin3d.appendChild(back); scene.appendChild(coin3d);
+            var serial = document.createElement('div'); serial.className = 'nft-item-serial';
+            serial.textContent = this.serialTextOf(nft) + ' • ' + this.protoOf(nft); serial.style.color = meta.color;
+            card.appendChild(scene); card.appendChild(serial);
 
-            var front = document.createElement('div');
-            front.className = 'coin-face coin-face-front';
-            var imgFront = document.createElement('img');
-            imgFront.src = meta.sprite;
-            imgFront.draggable = false;
-            front.appendChild(imgFront);
-            coin3d.appendChild(front);
-
-            var back = document.createElement('div');
-            back.className = 'coin-face coin-face-back';
-            var backContent = this.buildBack(nft.coin, meta, this.serialTextOf(nft));
-            back.appendChild(backContent);
-            coin3d.appendChild(back);
-
-            scene.appendChild(coin3d);
-
-            var serial = document.createElement('div');
-            serial.className = 'nft-item-serial';
-            serial.textContent = this.serialTextOf(nft) + ' • ' + this.protoOf(nft);
-            serial.style.color = meta.color;
-
-            card.appendChild(scene);
-            card.appendChild(serial);
-
-            let isDragging = false;
-            let prevX = 0, prevY = 0;
-            let rotX = 5, rotY = 0;
-            let velocityX = 0, velocityY = 0;
-            let animationFrame;
-
-            const updateRotation = () => {
-                coin3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-            };
-
+            let isDragging = false, prevX = 0, prevY = 0, rotX = 5, rotY = 0, velocityX = 0, velocityY = 0, animationFrame;
+            const updateRotation = () => { coin3d.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`; };
             const applyInertia = () => {
                 if (isDragging) return;
                 if (Math.abs(velocityX) < 0.1 && Math.abs(velocityY) < 0.1) {
-                    coin3d.style.animation = 'coinIdleSpin 20s linear infinite';
-                    coin3d.style.transform = '';
-                    return;
+                    coin3d.style.animation = 'coinIdleSpin 20s linear infinite'; coin3d.style.transform = ''; return;
                 }
-                rotY += velocityX;
-                rotX -= velocityY;
-                velocityX *= 0.95;
-                velocityY *= 0.95;
-                updateRotation();
-                animationFrame = requestAnimationFrame(applyInertia);
+                rotY += velocityX; rotX -= velocityY; velocityX *= 0.95; velocityY *= 0.95;
+                updateRotation(); animationFrame = requestAnimationFrame(applyInertia);
             };
-
             scene.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                card.classList.add('is-dragging');
-                cancelAnimationFrame(animationFrame);
+                isDragging = true; card.classList.add('is-dragging'); cancelAnimationFrame(animationFrame);
                 if (coin3d.style.animation) {
-                    try {
-                        const st = window.getComputedStyle(coin3d);
-                        const matrix = new DOMMatrixReadOnly(st.transform);
-                        rotY = Math.atan2(matrix.m13, matrix.m11) * (180 / Math.PI);
-                        rotX = 5;
-                    } catch (err) {}
+                    try { const st = window.getComputedStyle(coin3d); const matrix = new DOMMatrixReadOnly(st.transform);
+                        rotY = Math.atan2(matrix.m13, matrix.m11) * (180 / Math.PI); rotX = 5; } catch (err) {}
                     coin3d.style.animation = 'none';
                 }
-                prevX = e.clientX;
-                prevY = e.clientY;
-                velocityX = 0; velocityY = 0;
-                e.preventDefault();
+                prevX = e.clientX; prevY = e.clientY; velocityX = 0; velocityY = 0; e.preventDefault();
             });
-
             window.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
-                const dx = e.clientX - prevX;
-                const dy = e.clientY - prevY;
-                rotY += dx * 0.8;
-                rotX -= dy * 0.8;
-                velocityX = dx * 0.8;
-                velocityY = dy * 0.8;
-                updateRotation();
-                prevX = e.clientX;
-                prevY = e.clientY;
+                const dx = e.clientX - prevX; const dy = e.clientY - prevY;
+                rotY += dx * 0.8; rotX -= dy * 0.8; velocityX = dx * 0.8; velocityY = dy * 0.8;
+                updateRotation(); prevX = e.clientX; prevY = e.clientY;
             });
-
             window.addEventListener('mouseup', () => {
-                if (!isDragging) return;
-                isDragging = false;
-                card.classList.remove('is-dragging');
-                applyInertia();
+                if (!isDragging) return; isDragging = false; card.classList.remove('is-dragging'); applyInertia();
             });
-
-            card.addEventListener('click', (e) => {
-                if (Math.abs(velocityX) > 2 || Math.abs(velocityY) > 2) return;
-                this.selectNft(nft, card);
-            });
-
             this.layer.appendChild(card);
         });
     }
@@ -992,10 +577,8 @@ class SideBViewer {
     }
 
     selectNft(nft, card) {
-        this.selectedNft = nft;
-        this.layer.querySelectorAll('.nft-collection-item').forEach(el => el.classList.remove('selected'));
+        this.selectedNft = nft; this.layer.querySelectorAll('.nft-collection-item').forEach(el => el.classList.remove('selected'));
         if (card) card.classList.add('selected');
-        
         var meta = this.coinMeta[nft.coin] || {};
         document.getElementById('selectedNft').textContent = meta.title + ' ' + this.serialTextOf(nft);
         document.getElementById('nftType').textContent = nft.coin + ' • ' + this.protoOf(nft);
@@ -1006,38 +589,22 @@ class SideBViewer {
 
     updateStatus() {
         var bar = document.getElementById('statusbar');
-        if (bar) {
-            var modeText = (this.viewMode === 'mine') ? 'Моя коллекция' : 'Все NFT';
-            bar.textContent = 'Side B — ' + modeText + ' | ' + this.activeTab + ': ' + this.filtered().length + ' NFT';
-        }
-        
+        if (bar) bar.textContent = 'Side B — ' + this.activeTab + ': ' + this.filtered().length + ' NFT';
         var banner = document.getElementById('guestLoginBanner');
-        if (banner) {
-            banner.style.display = this._cloudUser ? 'none' : 'block';
-        }
+        if (banner) banner.style.display = this._cloudUser ? 'none' : 'block';
     }
 
     bindCopyables() {
-        var self = this;
-        var serial = document.getElementById('nftSerial');
-        var tx = document.getElementById('nftTx');
-        if (serial && !serial._copyBound) {
-            serial._copyBound = true;
-            serial.addEventListener('click', () => self.copyText(self.selectedNft ? self.serialTextOf(self.selectedNft) : serial.textContent, serial));
-        }
-        if (tx && !tx._copyBound) {
-            tx._copyBound = true;
-            tx.addEventListener('click', () => self.copyText(self.selectedNft?.tx || tx.textContent, tx));
-        }
+        var self = this; var serial = document.getElementById('nftSerial'); var tx = document.getElementById('nftTx');
+        if (serial && !serial._copyBound) { serial._copyBound = true; serial.addEventListener('click', () => self.copyText(self.selectedNft ? self.serialTextOf(self.selectedNft) : serial.textContent, serial)); }
+        if (tx && !tx._copyBound) { tx._copyBound = true; tx.addEventListener('click', () => self.copyText(self.selectedNft?.tx || tx.textContent, tx)); }
     }
 
     copyText(text, el) {
         if (!text || text === '—') return;
         navigator.clipboard.writeText(String(text)).then(() => {
             if (el) {
-                el.classList.add('copied');
-                var prev = el.textContent;
-                el.textContent = 'Скопировано';
+                el.classList.add('copied'); var prev = el.textContent; el.textContent = 'Скопировано';
                 setTimeout(() => { el.classList.remove('copied'); el.textContent = prev; }, 900);
             }
         });
@@ -1057,264 +624,150 @@ window.addEventListener('DOMContentLoaded', () => {
     const thumb = document.getElementById('nftScrollThumb');
     if (!layer || !rail || !thumb) return;
 
-    let dragging = false;
-    let dragStartY = 0;
-    let dragStartScroll = 0;
-    let pendingWheelTop = null;
-    let wheelFinishTimer = 0;
-    let wheelDeltaBuffer = 0;
-    let wheelBufferTimer = 0;
+    let dragging = false, dragStartY = 0, dragStartScroll = 0;
+    let pendingWheelTop = null, wheelFinishTimer = 0, wheelDeltaBuffer = 0, wheelBufferTimer = 0;
 
-    function getCards() {
-        return Array.from(layer.querySelectorAll('.nft-collection-item'));
-    }
-
+    function getCards() { return Array.from(layer.querySelectorAll('.nft-collection-item')); }
     function getRailScaleY() {
         const cssHeight = rail.offsetHeight;
         const visualHeight = rail.getBoundingClientRect().height;
         return cssHeight > 0 && visualHeight > 0 ? visualHeight / cssHeight : 1;
     }
 
-    // Finds the vertical distance between row 1 and row 2 (3 coins per row).
     function getRowStep() {
         const cards = getCards();
         if (!cards.length) return Math.max(1, layer.clientHeight);
-
         if (cards.length >= 4) {
-            const firstTop = cards[0].offsetTop;
-            const secondRowTop = cards[3].offsetTop;
+            const firstTop = cards[0].offsetTop, secondRowTop = cards[3].offsetTop;
             const measured = secondRowTop - firstTop;
             if (measured > 0) return measured;
         }
-
         const style = window.getComputedStyle(layer);
         const rowGap = parseFloat(style.rowGap) || 0;
         return cards[0].offsetHeight + rowGap;
     }
 
     function updateScrollbar() {
-        const cards = getCards();
-        const viewport = layer.clientHeight;
-        const content = layer.scrollHeight;
-        const track = rail.clientHeight;
-
-        // If there is more than one row, keep the control visible even when
-        // the current viewport happens to fit all rows. This prevents the
-        // independently positioned control from seeming to disappear.
-        if (!cards.length || cards.length <= 3 || !viewport || !track) {
-            rail.style.display = 'none';
-            return;
-        }
-
-        rail.style.display = 'block';
-        rail.style.visibility = 'visible';
-        rail.style.pointerEvents = 'auto';
-
-        const maxScroll = Math.max(0, content - viewport);
-        const canScroll = maxScroll > 1;
-        const thumbHeight = canScroll
-            ? Math.max(30, Math.min(track, track * viewport / content))
-            : Math.min(track, 42);
+        const cards = getCards(), viewport = layer.clientHeight, content = layer.scrollHeight, track = rail.clientHeight;
+        if (!cards.length || cards.length <= 3 || !viewport || !track) { rail.style.display = 'none'; return; }
+        rail.style.display = 'block'; rail.style.visibility = 'visible'; rail.style.pointerEvents = 'auto';
+        const maxScroll = Math.max(0, content - viewport), canScroll = maxScroll > 1;
+        const thumbHeight = canScroll ? Math.max(30, Math.min(track, track * viewport / content)) : Math.min(track, 42);
         const maxThumbTop = Math.max(0, track - thumbHeight);
-        const thumbTop = canScroll && maxThumbTop > 0
-            ? (layer.scrollTop / maxScroll) * maxThumbTop
-            : 0;
-
-        thumb.style.height = thumbHeight + 'px';
-        thumb.style.top = thumbTop + 'px';
-        thumb.style.opacity = canScroll ? '1' : '.72';
-        thumb.style.cursor = canScroll ? 'grab' : 'default';
+        const thumbTop = canScroll && maxThumbTop > 0 ? (layer.scrollTop / maxScroll) * maxThumbTop : 0;
+        thumb.style.height = thumbHeight + 'px'; thumb.style.top = thumbTop + 'px';
+        thumb.style.opacity = canScroll ? '1' : '.72'; thumb.style.cursor = canScroll ? 'grab' : 'default';
         rail.style.cursor = canScroll ? 'pointer' : 'default';
-        rail.setAttribute('aria-valuenow', canScroll
-            ? String(Math.round((layer.scrollTop / maxScroll) * 100))
-            : '0');
+        rail.setAttribute('aria-valuenow', canScroll ? String(Math.round((layer.scrollTop / maxScroll) * 100)) : '0');
     }
 
     layer.addEventListener('scroll', updateScrollbar, { passive: true });
-
-    // Mouse-wheel / touchpad: one gesture advances by exactly one NFT row.
-    // 3 columns mean one row = NFTs #1-3, then #4-6, and so on.
     layer.addEventListener('wheel', function (event) {
         if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
-
         const maxScroll = Math.max(0, layer.scrollHeight - layer.clientHeight);
         if (maxScroll <= 1) return;
-
         event.preventDefault();
-
         let delta = event.deltaY;
         if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) delta *= 40;
         else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) delta *= layer.clientHeight;
         delta /= getRailScaleY();
-
-        let steps = 0;
-        const absDelta = Math.abs(delta);
-
-        // A normal mouse wheel notch (about 100-120 px) is one row.
-        // Small trackpad deltas are accumulated until they form one gesture.
+        let steps = 0; const absDelta = Math.abs(delta);
         if (absDelta >= 50) {
-            steps = Math.max(1, Math.round(absDelta / 110));
-            wheelDeltaBuffer = 0;
-            clearTimeout(wheelBufferTimer);
+            steps = Math.max(1, Math.round(absDelta / 110)); wheelDeltaBuffer = 0; clearTimeout(wheelBufferTimer);
         } else {
-            wheelDeltaBuffer += delta;
-            clearTimeout(wheelBufferTimer);
+            wheelDeltaBuffer += delta; clearTimeout(wheelBufferTimer);
             wheelBufferTimer = setTimeout(() => { wheelDeltaBuffer = 0; }, 180);
             if (Math.abs(wheelDeltaBuffer) >= 55) {
                 steps = Math.max(1, Math.floor(Math.abs(wheelDeltaBuffer) / 55));
                 wheelDeltaBuffer -= Math.sign(wheelDeltaBuffer) * steps * 55;
             }
         }
-
         if (!steps) return;
-
-        const rowStep = getRowStep();
-        if (!rowStep) return;
-
+        const rowStep = getRowStep(); if (!rowStep) return;
         const baseTop = pendingWheelTop == null ? layer.scrollTop : pendingWheelTop;
-        const currentRow = Math.round(baseTop / rowStep);
-        const maxRow = Math.max(0, Math.ceil(maxScroll / rowStep));
-        const direction = Math.sign(delta);
-        const nextRow = Math.max(0, Math.min(maxRow, currentRow + direction * steps));
+        const currentRow = Math.round(baseTop / rowStep), maxRow = Math.max(0, Math.ceil(maxScroll / rowStep));
+        const direction = Math.sign(delta), nextRow = Math.max(0, Math.min(maxRow, currentRow + direction * steps));
         const nextTop = Math.min(maxScroll, nextRow * rowStep);
-
-        pendingWheelTop = nextTop;
-        layer.scrollTo({ top: nextTop, behavior: 'smooth' });
-
+        pendingWheelTop = nextTop; layer.scrollTo({ top: nextTop, behavior: 'smooth' });
         clearTimeout(wheelFinishTimer);
-        wheelFinishTimer = setTimeout(() => {
-            pendingWheelTop = null;
-            updateScrollbar();
-        }, 320);
+        wheelFinishTimer = setTimeout(() => { pendingWheelTop = null; updateScrollbar(); }, 320);
     }, { passive: false });
 
-    // Drag the custom thumb.
     thumb.addEventListener('pointerdown', function (event) {
         const maxScroll = layer.scrollHeight - layer.clientHeight;
         if (maxScroll <= 1) return;
-        dragging = true;
-        dragStartY = event.clientY;
-        dragStartScroll = layer.scrollTop;
-        thumb.setPointerCapture(event.pointerId);
-        event.preventDefault();
+        dragging = true; dragStartY = event.clientY; dragStartScroll = layer.scrollTop;
+        thumb.setPointerCapture(event.pointerId); event.preventDefault();
     });
 
     thumb.addEventListener('pointermove', function (event) {
         if (!dragging) return;
-        const maxScroll = layer.scrollHeight - layer.clientHeight;
-        const thumbTravel = rail.clientHeight - thumb.offsetHeight;
+        const maxScroll = layer.scrollHeight - layer.clientHeight, thumbTravel = rail.clientHeight - thumb.offsetHeight;
         if (maxScroll <= 0 || thumbTravel <= 0) return;
         const deltaY = (event.clientY - dragStartY) / getRailScaleY();
         layer.scrollTop = dragStartScroll + deltaY * (maxScroll / thumbTravel);
     });
 
     function stopDragging() { dragging = false; }
-    thumb.addEventListener('pointerup', stopDragging);
-    thumb.addEventListener('pointercancel', stopDragging);
-    thumb.addEventListener('lostpointercapture', stopDragging);
+    thumb.addEventListener('pointerup', stopDragging); thumb.addEventListener('pointercancel', stopDragging); thumb.addEventListener('lostpointercapture', stopDragging);
 
-    // Clicking the track pages to the clicked position.
     rail.addEventListener('pointerdown', function (event) {
         if (event.target === thumb || thumb.contains(event.target)) return;
-        const maxScroll = layer.scrollHeight - layer.clientHeight;
-        const thumbTravel = rail.clientHeight - thumb.offsetHeight;
+        const maxScroll = layer.scrollHeight - layer.clientHeight, thumbTravel = rail.clientHeight - thumb.offsetHeight;
         if (maxScroll <= 0 || thumbTravel <= 0) return;
-        const rect = rail.getBoundingClientRect();
-        const scaleY = getRailScaleY();
+        const rect = rail.getBoundingClientRect(), scaleY = getRailScaleY();
         const localY = (event.clientY - rect.top) / scaleY;
-        const targetTop = Math.max(0, Math.min(thumbTravel,
-            localY - thumb.offsetHeight / 2));
+        const targetTop = Math.max(0, Math.min(thumbTravel, localY - thumb.offsetHeight / 2));
         layer.scrollTo({ top: (targetTop / thumbTravel) * maxScroll, behavior: 'smooth' });
     });
 
     const mutationObserver = new MutationObserver(() => requestAnimationFrame(updateScrollbar));
     mutationObserver.observe(layer, { childList: true, subtree: true });
-
     if ('ResizeObserver' in window) {
         const resizeObserver = new ResizeObserver(updateScrollbar);
-        resizeObserver.observe(layer);
-        resizeObserver.observe(rail);
+        resizeObserver.observe(layer); resizeObserver.observe(rail);
     }
-
     window.addEventListener('resize', updateScrollbar);
     requestAnimationFrame(updateScrollbar);
-    setTimeout(updateScrollbar, 250);
-    setTimeout(updateScrollbar, 800);
+    setTimeout(updateScrollbar, 250); setTimeout(updateScrollbar, 800);
 })();
 </script>
 
+<script>
+/* ============================================================
+   МАГИЯ МАСШТАБИРОВАНИЯ (Точь-в-точь как на Стороне A)
+   ============================================================ */
+(function() {
+    function fixCanvasSize() {
+        var container = document.getElementById('sceneContainer');
+        var img = document.getElementById('cassette');
+        if (!container || !img) return;
 
-<script id="sideb-responsive-composition-scaler-0106">
-(function () {
-    const scene = document.getElementById('scene');
-    const container = document.getElementById('sceneContainer');
-    const img = document.getElementById('cassette');
-    const overlay = document.getElementById('overlayViewport');
-    if (!scene || !container || !img || !overlay) return;
+        if (!img.naturalWidth || !img.naturalHeight) {
+            img.onload = fixCanvasSize;
+            return;
+        }
 
-    // Keep the 0105 design plane and every overlay coordinate unchanged.
-    // The scene itself is now fixed to the browser viewport, so the scaler
-    // can no longer receive the width of a shrunken flex column.
-    const DESIGN_WIDTH = 2158.61728395;
-    const DESIGN_HEIGHT = 1024;
+        var nativeW = img.naturalWidth;
+        var nativeH = img.naturalHeight;
+        container.style.width = nativeW + 'px';
+        container.style.height = nativeH + 'px';
 
-    function fitCanvas() {
-        const availableWidth = Math.max(1, window.innerWidth || scene.clientWidth);
-        const availableHeight = Math.max(1, window.innerHeight || scene.clientHeight);
-        if (!availableWidth || !availableHeight) return;
+        var winW = window.innerWidth;
+        var winH = window.innerHeight;
+        var scale = Math.min(winW / nativeW, winH / nativeH);
 
-        const scale = Math.min(
-            availableWidth / DESIGN_WIDTH,
-            availableHeight / DESIGN_HEIGHT
-        );
-        if (!Number.isFinite(scale) || scale <= 0) return;
-
-        const renderedWidth = DESIGN_WIDTH * scale;
-        const renderedHeight = DESIGN_HEIGHT * scale;
-        const offsetX = (availableWidth - renderedWidth) / 2;
-        const offsetY = (availableHeight - renderedHeight) / 2;
-
-        container.style.width = DESIGN_WIDTH + 'px';
-        container.style.height = DESIGN_HEIGHT + 'px';
-        container.style.setProperty('left', offsetX + 'px', 'important');
-        container.style.setProperty('top', offsetY + 'px', 'important');
-        container.style.setProperty('transform-origin', 'top left', 'important');
-        container.style.transform = 'scale(' + scale + ')';
-
-        // Keep the overlay/image relationship from 0105 exactly as-is.
-        overlay.style.width = '1366px';
-        overlay.style.height = '648px';
-        overlay.style.transform = 'scale(1.580246913580)';
-        img.style.left = '311.30864198px';
-        img.style.top = '0';
-        img.style.width = '1536px';
-        img.style.height = '1024px';
-
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
         container.style.opacity = '1';
     }
 
-    function start() {
-        if (img.complete && img.naturalWidth) requestAnimationFrame(fitCanvas);
-        else img.addEventListener('load', fitCanvas, { once: true });
-        window.addEventListener('resize', fitCanvas, { passive: true });
-        window.addEventListener('orientationchange', fitCanvas, { passive: true });
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', fitCanvas, { passive: true });
-        }
-        if ('ResizeObserver' in window) {
-            const observer = new ResizeObserver(fitCanvas);
-            observer.observe(scene);
-        }
-        requestAnimationFrame(fitCanvas);
-        setTimeout(fitCanvas, 100);
-        setTimeout(fitCanvas, 500);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-    } else {
-        start();
-    }
+    window.addEventListener('resize', fixCanvasSize, { passive: true });
+    window.addEventListener('orientationchange', fixCanvasSize, { passive: true });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', fixCanvasSize, { passive: true });
+    window.addEventListener('load', fixCanvasSize);
+    document.addEventListener('DOMContentLoaded', fixCanvasSize);
+    setTimeout(fixCanvasSize, 100);
+    setTimeout(fixCanvasSize, 500);
 })();
 </script>
 
