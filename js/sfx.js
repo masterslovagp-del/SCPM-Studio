@@ -281,11 +281,16 @@
         updateMusicUI();
     }
 
-    function boot() {
+        function boot() {
         bindMusicButtons();
-        document.addEventListener('pointerdown', function once() {
-            document.removeEventListener('pointerdown', once);
-            if (!muted) tryAutoStartMusic();
+        
+        // Принудительно разблокируем аудио при первом же клике по странице
+        document.addEventListener('pointerdown', function unlockOnce() {
+            document.removeEventListener('pointerdown', unlockOnce);
+            unlock(); // Разблокирует AudioContext
+            if (!muted && !musicOn) {
+                tryAutoStartMusic(); // Попробует включить музыку
+            }
         }, { once: true, passive: true });
     }
 

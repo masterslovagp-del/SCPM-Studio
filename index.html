@@ -618,7 +618,7 @@
                 <div id="cassetteMotto" aria-hidden="true">ВЕЛИЧИЕ ИЗМЕРЯЕТСЯ В МАТЕРИАЛЬНОМ</div>
                 <div id="cassetteNew" aria-hidden="true">NEW</div>
 
-                <a href="sideb.html" class="side-letter-flip" title="Перевернуть кассету → Side B" aria-label="Flip to Side B"></a>
+                <a href="sideb.html" class="side-letter-flip" title="Перевернуть кассету → Side B" aria-label="Flip to Side B" onclick="if(window.scpmSfx) scpmSfx.flip(); setTimeout(function(){ window.location.href='sideb.html'; }, 250); return false;"></a>
                 <span class="side-glow-letter side-a-letter">A</span>
                 <span class="side-glow-side side-a-side">SIDE</span>
 

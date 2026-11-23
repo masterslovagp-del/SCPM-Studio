@@ -219,7 +219,8 @@
 </style>
 
 <style id="side-b-flip-hit-area-only-0102">
-#sceneContainer > a#btnFlipSide.side-letter-flip[href="index.html"] {
+/* Зона клика теперь работает внутри overlayViewport */
+#btnFlipSide.side-letter-flip {
     left: var(--b-letter-left, 21.1%) !important;
     top: var(--b-letter-top, 11.7%) !important;
     width: 88px !important; height: 92px !important;
@@ -280,7 +281,7 @@
                         </a>
                     </div>
 
-                    <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A"></a>
+                    <a href="index.html" id="btnFlipSide" class="side-letter-flip" title="Перевернуть кассету → Side A" aria-label="Flip to Side A" onclick="if(window.scpmSfx) scpmSfx.flip(); setTimeout(function(){ window.location.href='index.html'; }, 250); return false;"></a>
                     <span class="side-glow-letter side-b-letter">B</span>
                     <span class="side-glow-side side-b-side">SIDE</span>
                 </div><!-- /#overlayViewport -->
