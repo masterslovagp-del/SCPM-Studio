@@ -224,6 +224,7 @@
         var playIcon = document.getElementById('iconPlay');
         var pauseIcon = document.getElementById('iconPause');
         var playBtn = document.getElementById('btnMusicPlay');
+        var toggleBtn = document.getElementById('btnMusicToggle'); // Для Стороны B
 
         if (volIcon && muteIcon) {
             if (muted) {
@@ -246,6 +247,11 @@
                 playBtn.classList.remove('active');
             }
         }
+
+        // Обновляем иконку на Стороне B
+        if (toggleBtn) {
+            toggleBtn.textContent = musicOn ? '🔊' : '🔇';
+        }
     }
 
     function bindMusicButtons() {
@@ -258,6 +264,7 @@
                 if (!isMuted() && !musicOn) setMusic(true);
             });
         }
+        
         var playBtn = document.getElementById('btnMusicPlay');
         if (playBtn && playBtn.dataset.bound !== '1') {
             playBtn.dataset.bound = '1';
@@ -268,6 +275,19 @@
                 try { localStorage.setItem('scpm_music_auto', musicOn ? '1' : '0'); } catch (e) {}
             });
         }
+
+        // Привязка кнопки на Стороне B
+        var toggleBtn = document.getElementById('btnMusicToggle');
+        if (toggleBtn && toggleBtn.dataset.bound !== '1') {
+            toggleBtn.dataset.bound = '1';
+            toggleBtn.addEventListener('click', function () {
+                unlock();
+                if (isMuted()) setMuted(false);
+                setMusic(!musicOn);
+                try { localStorage.setItem('scpm_music_auto', musicOn ? '1' : '0'); } catch (e) {}
+            });
+        }
+
         var prevBtn = document.getElementById('btnMusicPrev');
         if (prevBtn && prevBtn.dataset.bound !== '1') {
             prevBtn.dataset.bound = '1';
@@ -281,15 +301,15 @@
         updateMusicUI();
     }
 
-        function boot() {
+    function boot() {
         bindMusicButtons();
         
-        // Принудительно разблокируем аудио при первом же клике по странице
+        // Включаем музыку при первом клике на странице (браузеры этого требуют)
         document.addEventListener('pointerdown', function unlockOnce() {
             document.removeEventListener('pointerdown', unlockOnce);
-            unlock(); // Разблокирует AudioContext
+            unlock();
             if (!muted && !musicOn) {
-                tryAutoStartMusic(); // Попробует включить музыку
+                tryAutoStartMusic();
             }
         }, { once: true, passive: true });
     }
